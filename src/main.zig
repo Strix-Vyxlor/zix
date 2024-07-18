@@ -2,9 +2,8 @@ const std = @import("std");
 const cli = @import("zig-cli");
 const nix_on_droid = @import("nix-on-droid.zig");
 const nix = @import("nix.zig");
-
-var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-const allocator = gpa.allocator();
+const json = @import("zig-json");
+const knownFolders = @import("known-folders");
 
 const Config = @import("config.zig");
 var config: Config = .{
@@ -12,8 +11,36 @@ var config: Config = .{
     .home = false,
     .update_flake = false,
     .use_flake = false,
-    .flake_path = "~/.nix-config",
+    .flake_path = undefined,
 };
+
+var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+const allocator = gpa.allocator();
+
+fn loadConfig() !void {
+    var conf_dir = try knownFolders.open(allocator, knownFolders.KnownFolder.local_configuration, .{});
+    defer conf_dir.?.close();
+    if (conf_dir) |dir| {
+        const conf_file = dir.openFile("zix/zix.conf", .{}) catch |err| {
+            switch (err) {
+                std.fs.File.OpenError.FileNotFound => {
+                    config.flake_path = "~/.nix-config";
+                    std.log.debug("useing default path", .{});
+                    return;
+                },
+                else => return err,
+            }
+        };
+
+        const value = try json.parseFile(conf_file, allocator);
+        errdefer value.deinit(allocator);
+        defer value.deinit(allocator);
+
+        const path = value.get("path").string();
+        config.flake_path = try allocator.dupe(u8, path);
+        std.debug.print("using {s}\n", .{path});
+    }
+}
 
 fn parseArgs() cli.AppRunner.Error!cli.ExecFn {
     var r = try cli.AppRunner.init(std.heap.page_allocator);
@@ -72,7 +99,7 @@ fn parseArgs() cli.AppRunner.Error!cli.ExecFn {
                 .value_ref = r.mkRef(&config.update_flake),
             } },
             .target = cli.CommandTarget{
-                .subcommands = &.{ try nix_on_droid.nix_on_droid_command(nix.update), sync_command, update_command },
+                .subcommands = &.{ try nix_on_droid.nixOnDroidCommand(nix.update), sync_command, update_command },
             },
         },
         .version = "0.1",
@@ -83,6 +110,8 @@ fn parseArgs() cli.AppRunner.Error!cli.ExecFn {
 }
 
 pub fn main() anyerror!void {
+    try loadConfig();
+
     nix_on_droid.init(&config);
     nix.init(&config);
 

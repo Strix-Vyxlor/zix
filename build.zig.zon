@@ -23,6 +23,10 @@
             .url = "https://github.com/Strix-Vyxlor/zig-json/archive/refs/tags/0.1.3.tar.gz",
             .hash = "122068053f0658600ad5cb5023b45a203c422a6c263dd150b55a98abcf1ad0ce68b4",
         },
+        .@"known-folders" = .{
+            .url = "git+https://github.com/ziglibs/known-folders.git#47076c6b11214a218e9244471d8762310820911a",
+            .hash = "12209d2738a2e1dbd3781c2e5f01a2ea877dcfeea53efdfa1913247297d328e6b207",
+        },
     },
     .paths = .{
         // This makes *all* files, recursively, included in this package. It is generally

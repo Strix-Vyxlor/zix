@@ -8,7 +8,7 @@ pub fn init(conf: *Config) void {
     c = conf;
 }
 
-pub fn nix_on_droid_command(update: fn () anyerror!void) !cli.Command {
+pub fn nixOnDroidCommand(update: fn () anyerror!void) !cli.Command {
     const sync_command = cli.Command{
         .name = "sync",
         .target = cli.CommandTarget{

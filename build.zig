@@ -18,14 +18,23 @@ pub fn build(b: *std.Build) void {
     const zigcli_dep = b.dependency("zig-cli", .{ .target = target });
     const zigcli_mod = zigcli_dep.module("zig-cli");
 
+    const zigJson = b.dependency("zig-json", .{
+        .target = target,
+        .optimize = optimize,
+    });
+
+    const known_folders = b.dependency("known-folders", .{});
+
     const exe = b.addExecutable(.{
         .name = "zix",
         .root_source_file = b.path("src/main.zig"),
         .target = target,
         .optimize = optimize,
     });
-    
+
     exe.root_module.addImport("zig-cli", zigcli_mod);
+    exe.root_module.addImport("zig-json", zigJson.module("zig-json"));
+    exe.root_module.addImport("known-folders", known_folders.module("known-folders"));
 
     // This declares intent for the executable to be installed into the
     // standard location when the user invokes the "install" step (the default
