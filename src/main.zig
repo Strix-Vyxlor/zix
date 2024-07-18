@@ -1,41 +1,19 @@
 const std = @import("std");
 const cli = @import("zig-cli");
+const nix_on_droid = @import("nix-on-droid.zig");
+const nix = @import("nix.zig");
 
 var gpa = std.heap.GeneralPurposeAllocator(.{}){};
 const allocator = gpa.allocator();
 
-var config = struct {
-    system: bool = false,
-    home: bool = false,
-    update_flake: bool = false,
-    flake_path: []const u8 = undefined,
-}{};
-
-fn nix_on_droid_command() !cli.Command {
-    const sync_command = cli.Command{
-        .name = "sync",
-        .target = cli.CommandTarget{
-            .action = cli.CommandAction{
-                .exec = nix_on_droid_sync,
-            },
-        },
-    };
-
-    const update_command = cli.Command{
-        .name = "update",
-        .target = cli.CommandTarget{
-            .action = cli.CommandAction{
-                .exec = update,
-            },
-        },
-    };
-
-    return cli.Command{ .name = "nix-on-droid", .description = cli.Description{
-        .one_line = "nix-on-droid updating and syncing",
-    }, .target = cli.CommandTarget{
-        .subcommands = &.{ sync_command, update_command },
-    } };
-}
+const Config = @import("config.zig");
+var config: Config = .{
+    .system = false,
+    .home = false,
+    .update_flake = false,
+    .use_flake = false,
+    .flake_path = "~/.nix-config",
+};
 
 fn parseArgs() cli.AppRunner.Error!cli.ExecFn {
     var r = try cli.AppRunner.init(std.heap.page_allocator);
@@ -45,7 +23,7 @@ fn parseArgs() cli.AppRunner.Error!cli.ExecFn {
         .options = &.{},
         .target = cli.CommandTarget{
             .action = cli.CommandAction{
-                .exec = sync,
+                .exec = nix.sync,
             },
         },
     };
@@ -55,7 +33,7 @@ fn parseArgs() cli.AppRunner.Error!cli.ExecFn {
 
         .target = cli.CommandTarget{
             .action = cli.CommandAction{
-                .exec = update,
+                .exec = nix.update,
             },
         },
     };
@@ -68,8 +46,13 @@ fn parseArgs() cli.AppRunner.Error!cli.ExecFn {
             },
             .options = &.{ .{
                 .long_name = "flake",
-                .help = "use flake",
+                .help = "use default flake",
                 .short_alias = 'f',
+                .value_ref = r.mkRef(&config.use_flake),
+            }, .{
+                .long_name = "flake-override",
+                .help = "use flake at custom directory",
+                .short_alias = 'F',
                 .value_ref = r.mkRef(&config.flake_path),
                 .value_name = "PATH",
             }, .{
@@ -89,7 +72,7 @@ fn parseArgs() cli.AppRunner.Error!cli.ExecFn {
                 .value_ref = r.mkRef(&config.update_flake),
             } },
             .target = cli.CommandTarget{
-                .subcommands = &.{ try nix_on_droid_command(), sync_command, update_command },
+                .subcommands = &.{ try nix_on_droid.nix_on_droid_command(nix.update), sync_command, update_command },
             },
         },
         .version = "0.1",
@@ -100,31 +83,9 @@ fn parseArgs() cli.AppRunner.Error!cli.ExecFn {
 }
 
 pub fn main() anyerror!void {
+    nix_on_droid.init(&config);
+    nix.init(&config);
+
     const action = try parseArgs();
     return action();
-}
-
-fn sync() !void {
-    const c = &config;
-    if (c.flake_path.len != 0) {
-        if (c.system == c.home) {
-            std.log.debug("syncing nix config flake at {s}, update: {}", .{ c.flake_path, c.update_flake });
-        } else if (c.home) {
-            std.log.debug("syncing home-manager at {s}, update: {}", .{ c.flake_path, c.update_flake });
-        } else {
-            std.log.debug("syncing nix system config at {s}, update: {}", .{ c.flake_path, c.update_flake });
-        }
-    } else std.log.debug("syncing nix on droid", .{});
-}
-
-fn nix_on_droid_sync() !void {
-    const c = &config;
-    if (c.flake_path.len != 0) {
-        std.log.debug("syncing nix on droid config flake at {s}, update: {}", .{ c.flake_path, c.update_flake });
-    } else std.log.debug("syncing nix on droid config", .{});
-}
-
-fn update() !void {
-    const c = &config;
-    std.log.debug("updating config at {s}", .{c.flake_path});
 }

@@ -1,0 +1,5 @@
+system: bool = false,
+home: bool = false,
+update_flake: bool = false,
+use_flake: bool = false,
+flake_path: []const u8 = "~/.nix-config",
