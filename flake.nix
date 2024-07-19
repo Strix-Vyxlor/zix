@@ -7,8 +7,15 @@
   outputs = inputs@{ self, ... }:
     let 
       package = {
+        version = "0.1";
         name = "zix";
-        src = ".";
+        dev_src = nixpkgs.fetchFromGithub {
+          
+        };
+        src = nixpkgs.fetchurl {
+          url = "";
+          hash = "";
+        };
       };
 
       supportedSystems = [ "aarch64-linux" "x86_64-linux" ];
@@ -28,34 +35,33 @@
             ];
         };});
 
-      package = forAllSystems (system:
+      packages = forAllSystems (system:
         let pkgs = nixpkgsFor.${system};
         in {
-          default = pkgs.stdenv.mkDerivation {
+          devel = pkgs.stdenv.mkDerivation {
             # package name and src dir
-            pname = package.name;
-            src = package.src;
+            name = package.name;
+            src = package.dev_src;
 
             # runtime packages
             buildInputs = with pkgs; [];
 
             # build packages
             nativeBuildInputs = with pkgs; [
+              tar
+              gzip
               zig
             ];
 
-
             buildPhase = ''
-                # put build commands here
-              '';
+              zig build
+            '';
 
             installPhase = ''
                 # install commands here
+                mkdir -p $out/bin
+                cp bin/zix $out/bin
               '';
-
-            postFixup = ''
-              # put wrapper command here;
-            '';
           };
         }
     );

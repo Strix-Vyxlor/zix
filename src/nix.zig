@@ -1,11 +1,14 @@
 const std = @import("std");
 const cli = @import("zig-cli");
+const common = @import("common.zig");
 
 const Config = @import("config.zig");
 var config: *Config = undefined;
+var allocator: *std.mem.Allocator = undefined;
 
-pub fn init(conf: *Config) void {
+pub fn init(conf: *Config, alloc: *std.mem.Allocator) void {
     config = conf;
+    allocator = alloc;
 }
 
 pub fn syncCommand() cli.Command {
@@ -17,11 +20,31 @@ pub fn syncCommand() cli.Command {
 fn sync() anyerror!void {
     if (config.use_flake == true or !std.mem.eql(u8, config.flake_path, ".nix-config")) {
         if (config.system == config.home) {
-            std.log.debug("syncing nix config flake at {s}, update: {}", .{ config.flake_path, config.update_flake });
+            const path = try common.getFlakePath();
+            std.debug.print("syncing nix config flake at {s}, update: {}", .{ path, config.update_flake });
+
+            const command = &[_][]const u8{ "nixos-rebuild", "switch", "--flake", path };
+            try common.spawn(command);
+
+            const home = &[_][]const u8{ "home-manager", "switch", "--flake", path };
+            try common.spawn(home);
         } else if (config.home) {
-            std.log.debug("syncing home-manager at {s}, update: {}", .{ config.flake_path, config.update_flake });
+            const path = try common.getFlakePath();
+            std.debug.print("syncing home-manager at {s}, update: {}", .{ path, config.update_flake });
+
+            const home = &[_][]const u8{ "home-manager", "switch", "--flake", path };
+            try common.spawn(home);
         } else {
-            std.log.debug("syncing nix system config at {s}, update: {}", .{ config.flake_path, config.update_flake });
+            const path = try common.getFlakePath();
+            std.debug.print("syncing nix system config at {s}, update: {}", .{ path, config.update_flake });
+
+            const command = &[_][]const u8{ "nixos-rebuild", "switch", "--flake", path };
+            try common.spawn(command);
         }
-    } else std.log.debug("syncing nix", .{});
+    } else {
+            std.debug.print("syncing nix", .{});
+
+            const command = &[_][]const u8{ "nixos-rebuild", "switch" };
+            try common.spawn(command);
+    }
 }

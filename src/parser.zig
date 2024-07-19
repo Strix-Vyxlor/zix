@@ -48,7 +48,7 @@ pub fn parseArgs(allocator: *std.mem.Allocator) cli.AppRunner.Error!cli.ExecFn {
                 .value_ref = r.mkRef(&config.update_flake),
             } },
             .target = cli.CommandTarget{
-                .subcommands = &.{ try nix_on_droid.nixOnDroidCommand(), nix.syncCommand(), common.updateCommand() },
+                .subcommands = &.{ try nix_on_droid.nixOnDroidCommand(), nix.syncCommand(), common.updateCommand(), common.updateGitCommand() },
             },
         },
         .version = "0.1",

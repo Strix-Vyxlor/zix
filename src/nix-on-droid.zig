@@ -1,7 +1,6 @@
 const std = @import("std");
 const cli = @import("zig-cli");
 const common = @import("common.zig");
-const knownFolders = @import("known-folders");
 
 const Config = @import("config.zig");
 var config: *Config = undefined;
@@ -31,13 +30,15 @@ pub fn nixOnDroidCommand() !cli.Command {
 
 pub fn sync() anyerror!void {
     if (config.use_flake == true or !std.mem.eql(u8, config.flake_path, ".nix-config")) {
-        const home: ?[]const u8 = try knownFolders.getPath(allocator.*, knownFolders.KnownFolder.home);
-        const path: []const u8 = try std.fmt.allocPrint(allocator.*, "{s}/{s}", .{ home.?, config.flake_path });
+        const path = try common.getFlakePath();
+        std.debug.print("syncing nix system config at {s}, update: {s}", .{ path, if (config.update_flake) "yes" else "no" });
 
-        std.log.debug("syncing nix system config at {s}, update: {}", .{ path, config.update_flake });
+        const command = &[_][]const u8{ "nix-on-droid", "switch", "--flake", path };
+        try common.spawn(command);
     } else {
-        std.debug.print("syncing nix-on-droid: nix-on-droid switch", .{});
+        std.debug.print("syncing config: nix-on-droid switch", .{});
+
         const command = &[_][]const u8{ "nix-on-droid", "switch" };
-        try common.spawn(command, allocator);
+        try common.spawn(command);
     }
 }

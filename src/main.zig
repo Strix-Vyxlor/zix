@@ -4,6 +4,7 @@ const nix_on_droid = @import("nix-on-droid.zig");
 const nix = @import("nix.zig");
 const json = @import("zig-json");
 const knownFolders = @import("known-folders");
+const common = @import("common.zig");
 
 const Config = @import("config.zig");
 var config: Config = .{
@@ -39,7 +40,7 @@ fn loadConfig() !void {
 
         const path = value.get("path").string();
         config.flake_path = try allocator.dupe(u8, path);
-        std.debug.print("using {s}\n", .{path});
+        std.log.debug("using flake ~/{s}\n", .{path});
 
         config.use_flake = value.get("flake").boolean();
         config.update_flake = value.get("update").boolean();
@@ -49,8 +50,9 @@ fn loadConfig() !void {
 pub fn main() anyerror!void {
     try loadConfig();
 
+    common.init(&config, &allocator);
     nix_on_droid.init(&config, &allocator);
-    nix.init(&config);
+    nix.init(&config, &allocator);
     parser.init(&config);
 
     const action = try parser.parseArgs(&allocator);
