@@ -5,8 +5,6 @@ const nix = @import("nix.zig");
 const json = @import("zig-json");
 const knownFolders = @import("known-folders");
 
-const common = @import("common.zig");
-
 const Config = @import("config.zig");
 var config: Config = .{
     .system = false,
@@ -51,14 +49,10 @@ fn loadConfig() !void {
 pub fn main() anyerror!void {
     try loadConfig();
 
-    nix_on_droid.init(&config);
+    nix_on_droid.init(&config, &allocator);
     nix.init(&config);
     parser.init(&config);
 
-    try common.spawn(&[_][]const u8{"sleep", "4"}, &allocator);
-    std.log.debug("hello", .{});
-
     const action = try parser.parseArgs(&allocator);
-
     return action();
 }
