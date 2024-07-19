@@ -1,5 +1,5 @@
 const std = @import("std");
-const cli = @import("zig-cli");
+const parser = @import("parser.zig");
 const nix_on_droid = @import("nix-on-droid.zig");
 const nix = @import("nix.zig");
 const json = @import("zig-json");
@@ -15,7 +15,8 @@ var config: Config = .{
 };
 
 var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-const allocator = gpa.allocator();
+var arena = std.heap.ArenaAllocator.init(gpa.allocator());
+var allocator = arena.allocator();
 
 fn loadConfig() !void {
     var conf_dir = try knownFolders.open(allocator, knownFolders.KnownFolder.local_configuration, .{});
@@ -24,7 +25,7 @@ fn loadConfig() !void {
         const conf_file = dir.openFile("zix/zix.conf", .{}) catch |err| {
             switch (err) {
                 std.fs.File.OpenError.FileNotFound => {
-                    config.flake_path = "~/.nix-config";
+                    config.flake_path = ".nix-config";
                     std.log.debug("useing default path", .{});
                     return;
                 },
@@ -39,74 +40,10 @@ fn loadConfig() !void {
         const path = value.get("path").string();
         config.flake_path = try allocator.dupe(u8, path);
         std.debug.print("using {s}\n", .{path});
+
+        config.use_flake = value.get("flake").boolean();
+        config.update_flake = value.get("update").boolean();
     }
-}
-
-fn parseArgs() cli.AppRunner.Error!cli.ExecFn {
-    var r = try cli.AppRunner.init(std.heap.page_allocator);
-
-    const sync_command = cli.Command{
-        .name = "sync",
-        .options = &.{},
-        .target = cli.CommandTarget{
-            .action = cli.CommandAction{
-                .exec = nix.sync,
-            },
-        },
-    };
-
-    const update_command = cli.Command{
-        .name = "update",
-
-        .target = cli.CommandTarget{
-            .action = cli.CommandAction{
-                .exec = nix.update,
-            },
-        },
-    };
-
-    const app = cli.App{
-        .command = cli.Command{
-            .name = "zix",
-            .description = cli.Description{
-                .one_line = "Tool for updating nix config",
-            },
-            .options = &.{ .{
-                .long_name = "flake",
-                .help = "use default flake",
-                .short_alias = 'f',
-                .value_ref = r.mkRef(&config.use_flake),
-            }, .{
-                .long_name = "flake-override",
-                .help = "use flake at custom directory",
-                .short_alias = 'F',
-                .value_ref = r.mkRef(&config.flake_path),
-                .value_name = "PATH",
-            }, .{
-                .long_name = "system",
-                .help = "only update system config",
-                .short_alias = 'S',
-                .value_ref = r.mkRef(&config.system),
-            }, .{
-                .long_name = "home",
-                .help = "only update home-manager config",
-                .short_alias = 'H',
-                .value_ref = r.mkRef(&config.home),
-            }, .{
-                .long_name = "update",
-                .help = "pull latest version of flake path git",
-                .short_alias = 'u',
-                .value_ref = r.mkRef(&config.update_flake),
-            } },
-            .target = cli.CommandTarget{
-                .subcommands = &.{ try nix_on_droid.nixOnDroidCommand(nix.update), sync_command, update_command },
-            },
-        },
-        .version = "0.1",
-        .author = "Strix Vyxlor",
-    };
-
-    return r.getAction(&app);
 }
 
 pub fn main() anyerror!void {
@@ -114,7 +51,8 @@ pub fn main() anyerror!void {
 
     nix_on_droid.init(&config);
     nix.init(&config);
+    parser.init(&config);
 
-    const action = try parseArgs();
+    const action = try parser.parseArgs(&allocator);
     return action();
 }

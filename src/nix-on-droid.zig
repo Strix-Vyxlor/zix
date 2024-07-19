@@ -8,7 +8,7 @@ pub fn init(conf: *Config) void {
     c = conf;
 }
 
-pub fn nixOnDroidCommand(update: fn () anyerror!void) !cli.Command {
+pub fn nixOnDroidCommand() !cli.Command {
     const sync_command = cli.Command{
         .name = "sync",
         .target = cli.CommandTarget{
@@ -18,24 +18,15 @@ pub fn nixOnDroidCommand(update: fn () anyerror!void) !cli.Command {
         },
     };
 
-    const update_command = cli.Command{
-        .name = "update",
-        .target = cli.CommandTarget{
-            .action = cli.CommandAction{
-                .exec = update,
-            },
-        },
-    };
-
     return cli.Command{ .name = "nix-on-droid", .description = cli.Description{
         .one_line = "nix-on-droid updating and syncing",
     }, .target = cli.CommandTarget{
-        .subcommands = &.{ sync_command, update_command },
+        .subcommands = &.{sync_command},
     } };
 }
 
-fn sync() anyerror!void {
-    if (c.flake_path.len != 0) {
-        std.log.debug("syncing nix on droid config flake at {s}, update: {}", .{ c.flake_path, c.update_flake });
-    } else std.log.debug("syncing nix on droid config", .{});
+pub fn sync() anyerror!void {
+    if (c.use_flake == true or !std.mem.eql(u8, c.flake_path, ".nix-config")) {
+        std.log.debug("syncing nix system config at {s}, update: {}", .{ c.flake_path, c.update_flake });
+    } else std.log.debug("syncing nix", .{});
 }

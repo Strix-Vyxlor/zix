@@ -6,76 +6,58 @@
 
   outputs = inputs@{ self, ... }:
     let 
-      system_arch = "x86_64-linux";
-
       package = {
-        name = "package";
-        src = "./src";
+        name = "zix";
+        src = ".";
       };
 
-      shell = "zsh";
+      supportedSystems = [ "aarch64-linux" "x86_64-linux" ];
+      forAllSystems = inputs.nixpkgs.lib.genAttrs supportedSystems;
 
-      pkgs = import inputs.nixpkgs {
-        system = system_arch;
-        config = {
-          alowUnfree = true;
-        };
-      };
-
-      shell-configs = {
-        zsh = with pkgs; [
-          fzf
-          zoxide
-          zsh
-          zsh-z
-          nix-zsh-completions
-          zsh-f-sy-h
-          zsh-fzf-tab
-          zsh-autosuggestions
-          oh-my-posh
-        ];
-      };
-      
+      nixpkgsFor =
+        forAllSystems (system: import inputs.nixpkgs { inherit system; });
     in {
-      devShells."${system_arch}".default = pkgs.mkShell {
-        packages = (with pkgs; [
-          zig
-          zls
-        ]) ++ (shell-configs.${shell});
 
-        shellHook = "exec " + shell;
-      };
+      devShells = forAllSystems (system: 
+        let pkgs = nixpkgsFor.${system};
+        in { 
+          default = pkgs.mkShell {
+            packages = with pkgs; [
+              zig
+              zls
+            ];
+        };});
 
-      package.${system_arch}.default = pkgs.stdenv.mkDerivation {
-        # package name and src dir
-        pname = package.name;
-        src = package.src;
+      package = forAllSystems (system:
+        let pkgs = nixpkgsFor.${system};
+        in {
+          default = pkgs.stdenv.mkDerivation {
+            # package name and src dir
+            pname = package.name;
+            src = package.src;
 
-        # runtime packages
-        buildInputs = with pkgs; [];
+            # runtime packages
+            buildInputs = with pkgs; [];
 
-        # build packages
-        nativeBuildInputs = with pkgs; [
-          zig
-        ];
-
-
-        buildPhase = ''
-          # put build commands here
-        '';
-
-        installPhase = ''
-          # install commands here
-        '';
-
-        postFixup = ''
-          # put wrapper command here;
-        '';
-      };
-    };
+            # build packages
+            nativeBuildInputs = with pkgs; [
+              zig
+            ];
 
 
+            buildPhase = ''
+                # put build commands here
+              '';
 
+            installPhase = ''
+                # install commands here
+              '';
 
-
+            postFixup = ''
+              # put wrapper command here;
+            '';
+          };
+        }
+    );
+  };
 }
