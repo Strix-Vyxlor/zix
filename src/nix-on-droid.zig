@@ -28,5 +28,10 @@ pub fn nixOnDroidCommand() !cli.Command {
 pub fn sync() anyerror!void {
     if (c.use_flake == true or !std.mem.eql(u8, c.flake_path, ".nix-config")) {
         std.log.debug("syncing nix system config at {s}, update: {}", .{ c.flake_path, c.update_flake });
-    } else std.log.debug("syncing nix", .{});
+    } else {
+        std.log.debug("syncing nix on droid", .{});
+
+        
+
+    }
 }
