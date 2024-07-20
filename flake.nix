@@ -9,13 +9,13 @@
       package = {
         version = "0.1";
         name = "zix";
-        dev_src = nixpkgs.fetchFromGithub {
+        dev_src = ./.;
           
-        };
-        src = nixpkgs.fetchurl {
-          url = "";
-          hash = "";
-        };
+
+        src = ./.;
+
+  
+
       };
 
       supportedSystems = [ "aarch64-linux" "x86_64-linux" ];

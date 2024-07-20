@@ -10,7 +10,6 @@ const Config = @import("config.zig");
 var config: Config = .{
     .system = false,
     .home = false,
-    .update_flake = false,
     .use_flake = false,
     .flake_path = undefined,
 };
@@ -43,7 +42,6 @@ fn loadConfig() !void {
         std.log.debug("using flake ~/{s}\n", .{path});
 
         config.use_flake = value.get("flake").boolean();
-        config.update_flake = value.get("update").boolean();
     }
 }
 

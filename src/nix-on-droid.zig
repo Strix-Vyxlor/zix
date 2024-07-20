@@ -31,7 +31,7 @@ pub fn nixOnDroidCommand() !cli.Command {
 pub fn sync() anyerror!void {
     if (config.use_flake == true or !std.mem.eql(u8, config.flake_path, ".nix-config")) {
         const path = try common.getFlakePath();
-        std.debug.print("syncing nix system config at {s}, update: {s}", .{ path, if (config.update_flake) "yes" else "no" });
+        std.debug.print("syncing nix system config at {s}", .{ path });
 
         const command = &[_][]const u8{ "nix-on-droid", "switch", "--flake", path };
         try common.spawn(command);
