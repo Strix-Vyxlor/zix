@@ -6,18 +6,6 @@
 
   outputs = inputs@{ self, ... }:
     let 
-      package = {
-        version = "0.1";
-        name = "zix";
-        dev_src = ./.;
-          
-
-        src = ./.;
-
-  
-
-      };
-
       supportedSystems = [ "aarch64-linux" "x86_64-linux" ];
       forAllSystems = inputs.nixpkgs.lib.genAttrs supportedSystems;
 
@@ -26,7 +14,9 @@
     in {
 
       devShells = forAllSystems (system: 
-        let pkgs = nixpkgsFor.${system};
+        let 
+          pkgs = nixpkgsFor.${system};
+          
         in { 
           default = pkgs.mkShell {
             packages = with pkgs; [
@@ -36,7 +26,21 @@
         };});
 
       packages = forAllSystems (system:
-        let pkgs = nixpkgsFor.${system};
+        let 
+          pkgs = nixpkgsFor.${system};
+          package = {
+            version = "0.1";
+            name = "zix";
+            dev_src = pkgs.fetchFromGitHub{
+              owner = "Strix-Vyxlor";
+              repo = "zix";
+              rev = "master";
+              hash = "sha256-1j7fVVqpXl9Fp6Qn5u08sbmdy8JcTL3V0VCrLAwNitQ=";
+            };
+    
+            src = ./.;
+    
+          };
         in {
           devel = pkgs.stdenv.mkDerivation {
             # package name and src dir
@@ -46,22 +50,25 @@
             # runtime packages
             buildInputs = with pkgs; [];
 
-            # build packages
-            nativeBuildInputs = with pkgs; [
-              tar
-              gzip
-              zig
-            ];
+            configurePhase = ''
+              pwd
+              mkdir -p $out
+            '';
 
-            buildPhase = ''
+            buildPhase  = ''
+              pwd
               zig build
             '';
 
             installPhase = ''
-                # install commands here
-                mkdir -p $out/bin
-                cp bin/zix $out/bin
-              '';
+              mkdir -p $out/bin
+              cp zig-out/bin/* $out/bin
+            '';
+
+            # build packages
+            nativeBuildInputs = with pkgs; [
+              zig
+            ];
           };
         }
     );
