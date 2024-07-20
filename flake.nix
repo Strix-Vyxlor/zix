@@ -31,24 +31,25 @@
           package = {
             version = "0.1";
             name = "zix";
-            dev_src = pkgs.fetchFromGitHub{
-              owner = "Strix-Vyxlor";
-              repo = "zix";
-              rev = "master";
-              hash = "sha256-1j7fVVqpXl9Fp6Qn5u08sbmdy8JcTL3V0VCrLAwNitQ=";
-            };
+            # dev_src = pkgs.fetchFromGitHub{
+            #   owner = "Strix-Vyxlor";
+            #   repo = "zix";
+            #   rev = "master";
+            #   hash = "sha256-1j7fVVqpXl9Fp6Qn5u08sbmdy8JcTL3V0VCrLAwNitQ=";
+            # };
     
-            src = pkgs.fetchurl{
-              url = "";
-              hash = "";
+            src = pkgs.fetchzip {
+              url = "https://github.com/Strix-Vyxlor/zix/archive/refs/tags/0.1.tar.gz";
+              hash = "sha256-w9i6dt1EJrigzk8ng4d+Mx1H7+WIr9+H9Sp3aEXjF1w=";
             };
     
           };
         in {
-          devel = pkgs.stdenv.mkDerivation {
+          default = pkgs.stdenv.mkDerivation {
             # package name and src dir
             name = package.name;
-            src = package.dev_src;
+            src = package.src;
+            version = package.version;
 
             # build packages
             nativeBuildInputs = with pkgs; [
@@ -62,13 +63,26 @@
             configurePhase = ''
               mkdir -p $out/
             '';
-
-            # buildPhase = ''
-              # export XDG_CACHE_HOME=$(mktemp -d)
-              # zig build --prefix $out
-              # rm -rf $XDG_CACHE_HOME
-            # '';
           };
+
+          # devel = pkgs.stdenv.mkDerivation {
+          #   # package name and src dir
+          #   name = package.name;
+          #   src = package.dev_src;
+
+          #   # build packages
+          #   nativeBuildInputs = with pkgs; [
+          #     zig.hook
+          #   ];
+
+          #   postPatch = ''
+          #     ln -s ${pkgs.callPackage ./deps.nix { }} $ZIG_GLOBAL_CACHE_DIR/p
+          #   '';
+
+          #   configurePhase = ''
+          #     mkdir -p $out/
+          #   '';
+          # };
         }
     );
   };
