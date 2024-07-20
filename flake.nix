@@ -38,7 +38,10 @@
               hash = "sha256-1j7fVVqpXl9Fp6Qn5u08sbmdy8JcTL3V0VCrLAwNitQ=";
             };
     
-            src = ./.;
+            src = pkgs.fetchurl{
+              url = "";
+              hash = "";
+            };
     
           };
         in {
@@ -48,7 +51,11 @@
             src = package.dev_src;
 
             # runtime packages
-            buildInputs = with pkgs; [];
+            buildInputs = with pkgs; [ zig ];
+
+            makeFlags = [
+              "WGET=true"
+            ];
 
             configurePhase = ''
               mkdir -p $out/
@@ -59,6 +66,8 @@
               zig build --prefix $out
               rm -rf $XDG_CACHE_HOME
             '';
+
+            
 
             # build packages
             nativeBuildInputs = with pkgs; [
