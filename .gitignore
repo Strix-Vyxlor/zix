@@ -3,3 +3,4 @@ zig-out
 zix.code-workspace
 .vscode
 .direnv
+result

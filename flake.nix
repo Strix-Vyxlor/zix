@@ -51,18 +51,13 @@
             buildInputs = with pkgs; [];
 
             configurePhase = ''
-              pwd
-              mkdir -p $out
+              mkdir -p $out/
             '';
 
-            buildPhase  = ''
-              pwd
-              zig build
-            '';
-
-            installPhase = ''
-              mkdir -p $out/bin
-              cp zig-out/bin/* $out/bin
+            buildPhase = ''
+              export XDG_CACHE_HOME=$(mktemp -d)
+              zig build --prefix $out
+              rm -rf $XDG_CACHE_HOME
             '';
 
             # build packages
