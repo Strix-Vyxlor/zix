@@ -51,7 +51,7 @@
             src = package.dev_src;
 
             # runtime packages
-            buildInputs = with pkgs; [ zig ];
+            buildInputs = with pkgs; [ zig.hook ];
 
             makeFlags = [
               "WGET=true"
@@ -61,11 +61,11 @@
               mkdir -p $out/
             '';
 
-            buildPhase = ''
-              export XDG_CACHE_HOME=$(mktemp -d)
-              zig build --prefix $out
-              rm -rf $XDG_CACHE_HOME
-            '';
+            # buildPhase = ''
+              # export XDG_CACHE_HOME=$(mktemp -d)
+              # zig build --prefix $out
+              # rm -rf $XDG_CACHE_HOME
+            # '';
 
             
 
