@@ -50,12 +50,14 @@
             name = package.name;
             src = package.dev_src;
 
-            # runtime packages
-            buildInputs = with pkgs; [ zig.hook ];
-
-            makeFlags = [
-              "WGET=true"
+            # build packages
+            nativeBuildInputs = with pkgs; [
+              zig.hook
             ];
+
+            postPatch = ''
+              ln -s ${pkgs.callPackage ./deps.nix { }} $ZIG_GLOBAL_CACHE_DIR/p
+            '';
 
             configurePhase = ''
               mkdir -p $out/
@@ -66,13 +68,6 @@
               # zig build --prefix $out
               # rm -rf $XDG_CACHE_HOME
             # '';
-
-            
-
-            # build packages
-            nativeBuildInputs = with pkgs; [
-              zig
-            ];
           };
         }
     );
