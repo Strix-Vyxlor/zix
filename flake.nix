@@ -42,6 +42,16 @@
               url = "https://github.com/Strix-Vyxlor/zix/archive/refs/tags/0.1.tar.gz";
               hash = "sha256-w9i6dt1EJrigzk8ng4d+Mx1H7+WIr9+H9Sp3aEXjF1w=";
             };
+
+            srcPrebuild-x86_64-linux = pkgs.fetchzip {
+              url = "https://github.com/Strix-Vyxlor/zix/releases/download/0.1/zix-aarch64-linux.tar.gz";
+              hash = "sha256-U7mEspVsejNbiDZgNBV9FtH+0MAL+1zx4Wqbi3BAB/U=";
+            };
+
+            srcPrebuild-aarch64-linux = pkgs.fetchzip {
+              url = "https://github.com/Strix-Vyxlor/zix/releases/download/0.1/zix-aarch64-linux.tar.gz";
+              hash = "";
+            };
     
           };
         in {
@@ -62,6 +72,19 @@
 
             configurePhase = ''
               mkdir -p $out/
+            '';
+          };
+
+          prebuild = pkgs.stdenv.mkDerivation {
+            name = package.name;
+            src = package."srcPrebuild-${system}";
+            version = package.version;
+
+            nativeBuildInputs = with pkgs; [ gnutar ];
+
+            installPhase = ''
+              mkdir -p $out/bin
+              cp zix $out/bin -r
             '';
           };
 
