@@ -1,4 +1,10 @@
 # zix, a nix helper writen in zig
 
-currently only working for functionality for nix-on-droid.
-but I'l try to make it work with everything
+configure zix with a json file.
+config at ```~/.config/zix/zix.conf```:
+```
+{
+  "flake": false,
+  "path": ".nix-config",
+}
+```
