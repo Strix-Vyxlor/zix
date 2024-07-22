@@ -46,6 +46,12 @@ pub fn parseArgs(allocator: *std.mem.Allocator) cli.AppRunner.Error!cli.ExecFn {
                     .short_alias = 'H',
                     .value_ref = r.mkRef(&config.home),
                 },
+                {
+                    .long_name = "nod",
+                    .help = "alias for nix on droid subcommand",
+                    .short_alias = "d",
+                    .value_ref = r.mkRef(&config.nod),
+                },
             },
             .target = cli.CommandTarget{
                 .subcommands = &.{ try nix_on_droid.nixOnDroidCommand(), nix.syncCommand(), common.updateCommand(), nix.upgradeCommand(), common.updateGitCommand() },

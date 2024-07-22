@@ -1,6 +1,7 @@
 const std = @import("std");
 const cli = @import("zig-cli");
 const common = @import("common.zig");
+const nod = @import("nix-on-droid.zig");
 
 const Config = @import("config.zig");
 var config: *Config = undefined;
@@ -29,6 +30,11 @@ pub fn upgrade() anyerror!void {
 }
 
 fn sync() anyerror!void {
+    if (config.nod) {
+        try nod.sync();
+        return;        
+    }
+    
     if (config.use_flake == true or !std.mem.eql(u8, config.flake_path, ".nix-config")) {
         if (config.system == config.home) {
             const path = try common.getFlakePath();

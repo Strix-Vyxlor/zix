@@ -12,6 +12,7 @@ var config: Config = .{
     .home = false,
     .use_flake = false,
     .flake_path = undefined,
+    .nod = false,
 };
 
 var gpa = std.heap.GeneralPurposeAllocator(.{}){};
@@ -42,6 +43,7 @@ fn loadConfig() !void {
         std.log.debug("using flake ~/{s}\n", .{path});
 
         config.use_flake = value.get("flake").boolean();
+        config.nod = value.get("nix-on-droid").boolean();
     }
 }
 
