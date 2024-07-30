@@ -42,7 +42,7 @@ fn loadConfig() !void {
 
         const path = value.get("path").string();
         config.flake_path = try allocator.dupe(u8, path);
-        stdout.print("using flake ~/{s}\n", .{path});
+        try stdout.print("using flake ~/{s}\n", .{path});
 
         config.use_flake = value.get("flake").boolean();
         config.nix_on_droid = value.get("nix-on-droid").boolean();
