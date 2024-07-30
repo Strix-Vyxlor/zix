@@ -45,13 +45,13 @@ fn sync() anyerror!void {
             const command = &[_][]const u8{ "sudo", "nixos-rebuild", "switch", "--flake", path };
             try common.spawn(command);
 
-            const home = &[_][]const u8{ "home-manager", "switch", "--flake", path };
+            const home = &[_][]const u8{ "home-manager", "-b", "hbk", "switch", "--flake", path };
             try common.spawn(home);
         } else if (config.home) {
             const path = try common.getFlakePath();
             try stdout.print("syncing home-manager at {s}", .{path});
 
-            const home = &[_][]const u8{ "home-manager", "switch", "--flake", path };
+            const home = &[_][]const u8{ "home-manager", "-b", "hbk", "switch", "--flake", path };
             try common.spawn(home);
         } else {
             const path = try common.getFlakePath();
