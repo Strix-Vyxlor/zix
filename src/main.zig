@@ -52,7 +52,7 @@ fn loadConfig() !void {
         config.hostname = try allocator.dupe(u8, hostname);
 
         const root_command = value.get("root-command").string();
-        config.hostname = try allocator.dupe(u8, root_command);
+        config.root_command = try allocator.dupe(u8, root_command);
     }
 }
 
