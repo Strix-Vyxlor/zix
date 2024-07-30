@@ -14,6 +14,7 @@ var config: Config = .{
     .flake_path = undefined,
     .nix_on_droid = false,
     .hostname = undefined,
+    .root_command = undefined,
 };
 
 var gpa = std.heap.GeneralPurposeAllocator(.{}){};
@@ -49,6 +50,9 @@ fn loadConfig() !void {
 
         const hostname = value.get("hostname").string();
         config.hostname = try allocator.dupe(u8, hostname);
+
+        const root_command = value.get("root-command").string();
+        config.hostname = try allocator.dupe(u8, root_command);
     }
 }
 

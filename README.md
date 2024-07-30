@@ -8,5 +8,6 @@ config at ```~/.config/zix/zix.conf```:
   "path": ".nix-config",
   "hostname": "none",
   "nix-on-droid": false,
+  "root-command": "sudo",
 }
 ```
