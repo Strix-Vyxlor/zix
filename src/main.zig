@@ -21,6 +21,7 @@ var arena = std.heap.ArenaAllocator.init(gpa.allocator());
 var allocator = arena.allocator();
 
 fn loadConfig() !void {
+    const stdout = std.io.getStdOut().writer();
     var conf_dir = try knownFolders.open(allocator, knownFolders.KnownFolder.local_configuration, .{});
     defer conf_dir.?.close();
     if (conf_dir) |dir| {
@@ -28,7 +29,7 @@ fn loadConfig() !void {
             switch (err) {
                 std.fs.File.OpenError.FileNotFound => {
                     config.flake_path = ".nix-config";
-                    std.log.debug("useing default config", .{});
+                    stdout.print("useing default config", .{});
                     return;
                 },
                 else => return err,
@@ -41,7 +42,7 @@ fn loadConfig() !void {
 
         const path = value.get("path").string();
         config.flake_path = try allocator.dupe(u8, path);
-        std.log.debug("using flake ~/{s}\n", .{path});
+        stdout.print("using flake ~/{s}\n", .{path});
 
         config.use_flake = value.get("flake").boolean();
         config.nix_on_droid = value.get("nix-on-droid").boolean();
