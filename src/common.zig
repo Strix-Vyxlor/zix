@@ -26,7 +26,13 @@ pub fn updateCommand() cli.Command {
 pub fn getFlakePath() ![]const u8 {
     const home: ?[]const u8 = try knownFolders.getPath(allocator.*, knownFolders.KnownFolder.home);
     const path: []const u8 = try std.fmt.allocPrint(allocator.*, "{s}/{s}", .{ home.?, config.flake_path });
-    return path;
+
+    if (try std.mem.eql(u8, config.hostname, "none")) {
+        return path;
+    } else {
+        const path_with_hostname: []const u8 = try std.fmt.allocPrint(allocator.*, "{s}#{s}", .{ path, config.hostname });
+        return path_with_hostname;
+    }
 }
 
 pub fn updateGit() anyerror!void {

@@ -29,14 +29,14 @@
         let 
           pkgs = nixpkgsFor.${system};
           package = {
-            version = "0.1";
+            version = "0.2.0";
             name = "zix";
-            # dev_src = pkgs.fetchFromGitHub{
-            #   owner = "Strix-Vyxlor";
-            #   repo = "zix";
-            #   rev = "master";
-            #   hash = "sha256-1j7fVVqpXl9Fp6Qn5u08sbmdy8JcTL3V0VCrLAwNitQ=";
-            # };
+            dev_src = pkgs.fetchFromGitHub{
+              owner = "Strix-Vyxlor";
+              repo = "zix";
+              rev = "master";
+              hash = "sha256-1j7fVVqpXl9Fp6Qn5u08sbmdy8JcTL3V0VCrLAwNitQ=";
+            };
     
             src = pkgs.fetchzip {
               url = "https://github.com/Strix-Vyxlor/zix/archive/refs/tags/0.1.tar.gz";
@@ -88,24 +88,24 @@
             '';
           };
 
-          # devel = pkgs.stdenv.mkDerivation {
-          #   # package name and src dir
-          #   name = package.name;
-          #   src = package.dev_src;
+          devel = pkgs.stdenv.mkDerivation {
+            # package name and src dir
+            name = package.name;
+            src = package.dev_src;
 
-          #   # build packages
-          #   nativeBuildInputs = with pkgs; [
-          #     zig.hook
-          #   ];
+            # build packages
+            nativeBuildInputs = with pkgs; [
+              zig.hook
+            ];
 
-          #   postPatch = ''
-          #     ln -s ${pkgs.callPackage ./deps.nix { }} $ZIG_GLOBAL_CACHE_DIR/p
-          #   '';
+            postPatch = ''
+              ln -s ${pkgs.callPackage ./deps.nix { }} $ZIG_GLOBAL_CACHE_DIR/p
+            '';
 
-          #   configurePhase = ''
-          #     mkdir -p $out/
-          #   '';
-          # };
+            configurePhase = ''
+              mkdir -p $out/
+            '';
+          };
         }
     );
   };

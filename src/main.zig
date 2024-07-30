@@ -12,7 +12,8 @@ var config: Config = .{
     .home = false,
     .use_flake = false,
     .flake_path = undefined,
-    .nod = false,
+    .nix_on_droid = false,
+    .hostname = undefined,
 };
 
 var gpa = std.heap.GeneralPurposeAllocator(.{}){};
@@ -27,7 +28,7 @@ fn loadConfig() !void {
             switch (err) {
                 std.fs.File.OpenError.FileNotFound => {
                     config.flake_path = ".nix-config";
-                    std.log.debug("useing default path", .{});
+                    std.log.debug("useing default config", .{});
                     return;
                 },
                 else => return err,
@@ -43,7 +44,10 @@ fn loadConfig() !void {
         std.log.debug("using flake ~/{s}\n", .{path});
 
         config.use_flake = value.get("flake").boolean();
-        config.nod = value.get("nix-on-droid").boolean();
+        config.nix_on_droid = value.get("nix-on-droid").boolean();
+
+        const hostname = value.get("hostname").string();
+        config.hostname = try allocator.dupe(u8, hostname);
     }
 }
 

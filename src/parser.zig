@@ -47,10 +47,16 @@ pub fn parseArgs(allocator: *std.mem.Allocator) cli.AppRunner.Error!cli.ExecFn {
                     .value_ref = r.mkRef(&config.home),
                 },
                 {
-                    .long_name = "nod",
+                    .long_name = "nix-on-droid",
                     .help = "alias for nix on droid subcommand",
                     .short_alias = "d",
-                    .value_ref = r.mkRef(&config.nod),
+                    .value_ref = r.mkRef(&config.nix_on_droid),
+                },
+                {
+                    .long_name = "hostname",
+                    .help = "hostname in nix config",
+                    .short_alias = 'n',
+                    .value_ref = r.mkRef(&config.hostname),
                 },
             },
             .target = cli.CommandTarget{
