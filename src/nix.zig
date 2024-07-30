@@ -40,7 +40,7 @@ fn sync() anyerror!void {
     if (config.use_flake == true or !std.mem.eql(u8, config.flake_path, ".nix-config")) {
         if (config.system == config.home) {
             const path = try common.getFlakePath();
-            stdout.print("syncing nix config flake at {s}", .{path});
+            try stdout.print("syncing nix config flake at {s}", .{path});
 
             const command = &[_][]const u8{ "sudo", "nixos-rebuild", "switch", "--flake", path };
             try common.spawn(command);
@@ -49,19 +49,19 @@ fn sync() anyerror!void {
             try common.spawn(home);
         } else if (config.home) {
             const path = try common.getFlakePath();
-            stdout.print("syncing home-manager at {s}", .{path});
+            try stdout.print("syncing home-manager at {s}", .{path});
 
             const home = &[_][]const u8{ "home-manager", "switch", "--flake", path };
             try common.spawn(home);
         } else {
             const path = try common.getFlakePath();
-            stdout.print("syncing nix system config at {s}", .{path});
+            try stdout.print("syncing nix system config at {s}", .{path});
 
             const command = &[_][]const u8{ "sudo", "nixos-rebuild", "switch", "--flake", path };
             try common.spawn(command);
         }
     } else {
-        stdout.print("syncing nix", .{});
+        try stdout.print("syncing nix", .{});
 
         const command = &[_][]const u8{ "sudo", "nixos-rebuild", "switch" };
         try common.spawn(command);

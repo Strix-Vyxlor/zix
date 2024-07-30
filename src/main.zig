@@ -29,7 +29,7 @@ fn loadConfig() !void {
             switch (err) {
                 std.fs.File.OpenError.FileNotFound => {
                     config.flake_path = ".nix-config";
-                    stdout.print("useing default config", .{});
+                    try stdout.print("useing default config", .{});
                     return;
                 },
                 else => return err,
