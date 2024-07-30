@@ -39,8 +39,8 @@
           #  };
     
             src = pkgs.fetchzip {
-              url = "https://github.com/Strix-Vyxlor/zix/archive/refs/tags/0.1.tar.gz";
-              hash = "sha256-w9i6dt1EJrigzk8ng4d+Mx1H7+WIr9+H9Sp3aEXjF1w=";
+              url = "https://github.com/Strix-Vyxlor/zix/archive/refs/tags/0.2.0.tar.gz";
+              hash = "sha256-UjkfvDsKEWnUVPDe4zh3al/OlFsYQsi7eqH2QdCfciE=";
             };
 
             srcPrebuild-x86_64-linux = pkgs.fetchzip {
