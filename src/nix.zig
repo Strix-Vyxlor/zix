@@ -40,7 +40,7 @@ fn sync() anyerror!void {
             const path = try common.getFlakePath();
             std.debug.print("syncing nix config flake at {s}", .{path});
 
-            const command = &[_][]const u8{ "nixos-rebuild", "switch", "--flake", path };
+            const command = &[_][]const u8{ "sudo", "nixos-rebuild", "switch", "--flake", path };
             try common.spawn(command);
 
             const home = &[_][]const u8{ "home-manager", "switch", "--flake", path };
@@ -55,13 +55,13 @@ fn sync() anyerror!void {
             const path = try common.getFlakePath();
             std.debug.print("syncing nix system config at {s}", .{path});
 
-            const command = &[_][]const u8{ "nixos-rebuild", "switch", "--flake", path };
+            const command = &[_][]const u8{ "sudo", "nixos-rebuild", "switch", "--flake", path };
             try common.spawn(command);
         }
     } else {
         std.debug.print("syncing nix", .{});
 
-        const command = &[_][]const u8{ "nixos-rebuild", "switch" };
+        const command = &[_][]const u8{ "sudo", "nixos-rebuild", "switch" };
         try common.spawn(command);
     }
 }
