@@ -63,7 +63,7 @@ pub fn parseArgs(allocator: *std.mem.Allocator) cli.AppRunner.Error!cli.ExecFn {
                 .subcommands = &.{ try nix_on_droid.nixOnDroidCommand(), nix.syncCommand(), common.updateCommand(), nix.upgradeCommand(), common.updateGitCommand() },
             },
         },
-        .version = "0.1",
+        .version = "0.2.0",
         .author = "Strix Vyxlor",
     };
 
