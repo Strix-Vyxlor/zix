@@ -35,7 +35,7 @@
               owner = "Strix-Vyxlor";
               repo = "zix";
               rev = "master";
-              hash = "sha256-2JQ1DOO6H/W+vapOEMK2Tj0hYd3BexXeQsuxopV2YMA=";
+              hash = "sha256-WjJ7vLGqHXmLJZsVyKowEwjFec+OCwIvzXlXrtYS0cg=";
             };
     
             src = pkgs.fetchzip {
