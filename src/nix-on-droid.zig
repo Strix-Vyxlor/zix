@@ -33,12 +33,12 @@ pub fn sync() anyerror!void {
 
     if (config.use_flake == true or !std.mem.eql(u8, config.flake_path, ".nix-config")) {
         const path = try common.getFlakePath();
-        try stdout.print("syncing nix system config at {s}", .{path});
+        try stdout.print("syncing nix system config at {s}\n\n", .{path});
 
         const command = &[_][]const u8{ "nix-on-droid", "switch", "--flake", path };
         try common.spawn(command);
     } else {
-        try stdout.print("syncing config: nix-on-droid switch", .{});
+        try stdout.print("syncing config: nix-on-droid switch\n\n", .{});
 
         const command = &[_][]const u8{ "nix-on-droid", "switch" };
         try common.spawn(command);

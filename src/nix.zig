@@ -40,11 +40,12 @@ fn sync() anyerror!void {
     if (config.use_flake == true or !std.mem.eql(u8, config.flake_path, ".nix-config")) {
         if (config.system == config.home) {
             const path = try common.getFlakePath();
-            try stdout.print("syncing nix config flake at {s}\n", .{path});
+            try stdout.print("syncing nix config flake at {s}\nsystem:\n\n", .{path});
 
             const command = &[_][]const u8{ config.root_command, "nixos-rebuild", "switch", "--flake", path };
             try common.spawn(command);
 
+            try stdout.print("\nhome:\n\n", .{});
             const home = &[_][]const u8{ "home-manager", "-b", "hbk", "switch", "--flake", path };
             try common.spawn(home);
         } else if (config.home) {
