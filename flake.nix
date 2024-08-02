@@ -29,7 +29,7 @@
         let 
           pkgs = nixpkgsFor.${system};
           package = {
-            version = "0.2.0";
+            version = "0.2.3";
             name = "zix";
           #  dev_src = pkgs.fetchFromGitHub{
           #    owner = "Strix-Vyxlor";
@@ -39,7 +39,7 @@
           #  };
     
             src = pkgs.fetchzip {
-              url = "https://github.com/Strix-Vyxlor/zix/archive/refs/tags/0.2.2.tar.gz";
+              url = "https://github.com/Strix-Vyxlor/zix/archive/refs/tags/0.2.3.tar.gz";
               hash = "sha256-HnBO6kMmnl31igcQEqiH+pl8ooW9oxg3HNtyGBBW6Uw=";
             };
 
