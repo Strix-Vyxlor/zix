@@ -45,7 +45,7 @@
 
             srcPrebuild-x86_64-linux = pkgs.fetchzip {
               url = "https://github.com/Strix-Vyxlor/zix/releases/download/0.2.3/zix-x86_64-linux.tar.gz";
-              hash = "";
+              hash = "sha256-kuiaED9f9VHXZLkathcdNEf0dr1mKbUgTrgjfjkM7Js=";
             };
 
             srcPrebuild-aarch64-linux = pkgs.fetchzip {
