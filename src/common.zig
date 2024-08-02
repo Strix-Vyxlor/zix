@@ -36,7 +36,10 @@ pub fn getFlakePath() ![]const u8 {
 }
 
 pub fn updateGit() anyerror!void {
-    std.log.debug("updating config", .{});
+    const path = try getFlakePath();
+
+    const command = &[_][]const u8{ "bash", try std.fmt.allocPrint(allocator.*, "{s}/pull.sh", .{path}) };
+    try spawn(command);
 }
 
 pub fn update() anyerror!void {

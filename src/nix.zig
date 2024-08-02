@@ -50,13 +50,13 @@ fn sync() anyerror!void {
             try common.spawn(home);
         } else if (config.home) {
             const path = try common.getFlakePath();
-            try stdout.print("syncing home-manager at {s}\n", .{path});
+            try stdout.print("syncing home-manager at {s}\n\n", .{path});
 
             const home = &[_][]const u8{ "home-manager", "-b", "hbk", "switch", "--flake", path };
             try common.spawn(home);
         } else {
             const path = try common.getFlakePath();
-            try stdout.print("syncing nix system config at {s}\n", .{path});
+            try stdout.print("syncing nix system config at {s}\n\n", .{path});
 
             const command = &[_][]const u8{ config.root_command, "nixos-rebuild", "switch", "--flake", path };
             try common.spawn(command);
