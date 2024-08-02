@@ -44,13 +44,13 @@
             };
 
             srcPrebuild-x86_64-linux = pkgs.fetchzip {
-              url = "https://github.com/Strix-Vyxlor/zix/releases/download/0.1/zix-aarch64-linux.tar.gz";
-              hash = "sha256-U7mEspVsejNbiDZgNBV9FtH+0MAL+1zx4Wqbi3BAB/U=";
+              url = "https://github.com/Strix-Vyxlor/zix/releases/download/0.2.3/zix-aarch64-linux.tar.gz";
+              hash = "";
             };
 
             srcPrebuild-aarch64-linux = pkgs.fetchzip {
-              url = "https://github.com/Strix-Vyxlor/zix/releases/download/0.1/zix-aarch64-linux.tar.gz";
-              hash = "sha256-U7mEspVsejNbiDZgNBV9FtH+0MAL+1zx4Wqbi3BAB/U=";
+              url = "https://github.com/Strix-Vyxlor/zix/releases/download/0.2.3/zix-aarch64-linux.tar.gz";
+              hash = "";
             };
     
           };
