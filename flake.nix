@@ -45,12 +45,12 @@
 
             srcPrebuild-x86_64-linux = pkgs.fetchzip {
               url = "https://github.com/Strix-Vyxlor/zix/releases/download/0.2.3/zix-aarch64-linux.tar.gz";
-              hash = "";
+              hash = "sha256-64gDuBtclRu2z3eYeI89hjPPzsmr0Oz5j97rQnQj2Iw=";
             };
 
             srcPrebuild-aarch64-linux = pkgs.fetchzip {
               url = "https://github.com/Strix-Vyxlor/zix/releases/download/0.2.3/zix-aarch64-linux.tar.gz";
-              hash = "";
+              hash = "sha256-64gDuBtclRu2z3eYeI89hjPPzsmr0Oz5j97rQnQj2Iw=";
             };
     
           };
