@@ -5,6 +5,7 @@ pub fn build(b: *std.Build) void {
     const optimize = b.standardOptimizeOption(.{});
 
     const zig_cli = b.dependency("zig-cli", .{ .target = target, .optimize = optimize });
+    const known_folders = b.dependency("known-folders", .{});
 
     const exe = b.addExecutable(.{
         .name = "zix",
@@ -14,6 +15,7 @@ pub fn build(b: *std.Build) void {
     });
 
     exe.root_module.addImport("zig-cli", zig_cli.module("zig-cli"));
+    exe.root_module.addImport("known-folders", known_folders.module("known-folders"));
 
     b.installArtifact(exe);
 
