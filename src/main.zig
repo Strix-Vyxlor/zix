@@ -1,24 +1,87 @@
 const std = @import("std");
+const cli = @import("zig-cli");
 
-pub fn main() !void {
-    // Prints to stderr (it's a shortcut based on `std.io.getStdErr()`)
-    std.debug.print("All your {s} are belong to us.\n", .{"codebase"});
+var config = struct {
+    system_only: bool = false,
+    home_only: bool = false,
+    nix_on_droid: bool = true,
+    flake_path: []const u8 = "",
+    hostname: []const u8 = "",
+    root_command: []const u8 = "",
+}{};
 
-    // stdout is for the actual output of your application, for example if you
-    // are implementing gzip, then only the compressed bytes should be sent to
-    // stdout, not any debugging messages.
-    const stdout_file = std.io.getStdOut().writer();
-    var bw = std.io.bufferedWriter(stdout_file);
-    const stdout = bw.writer();
-
-    try stdout.print("Run `zig build test` to run the tests.\n", .{});
-
-    try bw.flush(); // don't forget to flush!
+fn sync() !void {
+    std.debug.print("zix is work", .{});
 }
 
-test "simple test" {
-    var list = std.ArrayList(i32).init(std.testing.allocator);
-    defer list.deinit(); // try commenting this out and see if zig detects the memory leak!
-    try list.append(42);
-    try std.testing.expectEqual(@as(i32, 42), list.pop());
+pub fn main() !void {
+    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    var arena = std.heap.ArenaAllocator.init(gpa.allocator());
+    const allocator = arena.allocator();
+
+    defer arena.deinit();
+    defer {
+        _ = gpa.deinit();
+    }
+
+    var r = try cli.AppRunner.init(allocator);
+
+    const arg_parser = cli.App{
+        .command = cli.Command{
+            .name = "zix",
+            .description = cli.Description{
+                .one_line = "helper program for nix and home-manager",
+            },
+            .target = cli.CommandTarget{
+                .subcommands = &.{
+                    cli.Command{
+                        .name = "sync",
+                        .description = cli.Description{
+                            .one_line = "sync configuration and system",
+                            .detailed = "sync nixos and/or home-manager configuration",
+                        },
+                        .options = &.{
+                            .{
+                                .long_name = "hostname",
+                                .short_alias = 'n',
+                                .help = "hostname defined in configuration",
+                                .value_ref = r.mkRef(&config.hostname),
+                            },
+                            .{
+                                .long_name = "root-command",
+                                .short_alias = 'r',
+                                .help = "command to get root priviliges eg. sudo or doas",
+                                .value_ref = r.mkRef(&config.root_command),
+                            },
+                            .{
+                                .long_name = "flake",
+                                .short_alias = 'f',
+                                .help = "path to where flake is stored relative to home folder",
+                                .value_ref = r.mkRef(&config.flake_path),
+                            },
+                            .{
+                                .long_name = "system-only",
+                                .short_alias = 'S',
+                                .help = "only sync system configuration",
+                                .value_ref = r.mkRef(&config.system_only),
+                            },
+                            .{
+                                .long_name = "home-manager",
+                                .short_alias = 'H',
+                                .help = "only sync home manager configuration",
+                                .value_ref = r.mkRef(&config.home_only),
+                            },
+                        },
+                        .target = cli.CommandTarget{
+                            .action = cli.CommandAction{
+                                .exec = sync,
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    };
+
+    return r.run(&arg_parser);
 }
