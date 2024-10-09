@@ -10,20 +10,15 @@ var config = struct {
     root_command: []const u8 = "",
 }{};
 
+var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+var arena = std.heap.ArenaAllocator.init(gpa.allocator());
+const allocator = arena.allocator();
+
 fn sync() !void {
     std.debug.print("zix is work", .{});
 }
 
-pub fn main() !void {
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    var arena = std.heap.ArenaAllocator.init(gpa.allocator());
-    const allocator = arena.allocator();
-
-    defer arena.deinit();
-    defer {
-        _ = gpa.deinit();
-    }
-
+fn parser() cli.AppRunner.Error!cli.ExecFn {
     var r = try cli.AppRunner.init(allocator);
 
     const arg_parser = cli.App{
@@ -81,7 +76,14 @@ pub fn main() !void {
                 },
             },
         },
+        .version = "0.3.0",
+        .author = "Strix Vyxlor",
     };
 
-    return r.run(&arg_parser);
+    return r.getAction(&arg_parser);
+}
+
+pub fn main() !void {
+    const action = try parser();
+    return action();
 }
