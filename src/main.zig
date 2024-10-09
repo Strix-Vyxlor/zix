@@ -1,69 +1,24 @@
 const std = @import("std");
-const parser = @import("parser.zig");
-const nix_on_droid = @import("nix-on-droid.zig");
-const nix = @import("nix.zig");
-const json = @import("zig-json");
-const knownFolders = @import("known-folders");
-const common = @import("common.zig");
 
-const Config = @import("config.zig");
-var config: Config = .{
-    .system = false,
-    .home = false,
-    .use_flake = false,
-    .flake_path = undefined,
-    .nix_on_droid = false,
-    .hostname = undefined,
-    .root_command = undefined,
-};
+pub fn main() !void {
+    // Prints to stderr (it's a shortcut based on `std.io.getStdErr()`)
+    std.debug.print("All your {s} are belong to us.\n", .{"codebase"});
 
-var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-var arena = std.heap.ArenaAllocator.init(gpa.allocator());
-var allocator = arena.allocator();
+    // stdout is for the actual output of your application, for example if you
+    // are implementing gzip, then only the compressed bytes should be sent to
+    // stdout, not any debugging messages.
+    const stdout_file = std.io.getStdOut().writer();
+    var bw = std.io.bufferedWriter(stdout_file);
+    const stdout = bw.writer();
 
-fn loadConfig() !void {
-    const stdout = std.io.getStdOut().writer();
-    var conf_dir = try knownFolders.open(allocator, knownFolders.KnownFolder.local_configuration, .{});
-    defer conf_dir.?.close();
-    if (conf_dir) |dir| {
-        const conf_file = dir.openFile("zix/zix.conf", .{}) catch |err| {
-            switch (err) {
-                std.fs.File.OpenError.FileNotFound => {
-                    config.flake_path = ".nix-config";
-                    try stdout.print("useing default config", .{});
-                    return;
-                },
-                else => return err,
-            }
-        };
+    try stdout.print("Run `zig build test` to run the tests.\n", .{});
 
-        const value = try json.parseFile(conf_file, allocator);
-        errdefer value.deinit(allocator);
-        defer value.deinit(allocator);
-
-        const path = value.get("path").string();
-        config.flake_path = try allocator.dupe(u8, path);
-        try stdout.print("using flake ~/{s}\n", .{path});
-
-        config.use_flake = value.get("flake").boolean();
-        config.nix_on_droid = value.get("nix-on-droid").boolean();
-
-        const hostname = value.get("hostname").string();
-        config.hostname = try allocator.dupe(u8, hostname);
-
-        const root_command = value.get("root-command").string();
-        config.root_command = try allocator.dupe(u8, root_command);
-    }
+    try bw.flush(); // don't forget to flush!
 }
 
-pub fn main() anyerror!void {
-    try loadConfig();
-
-    common.init(&config, &allocator);
-    nix_on_droid.init(&config, &allocator);
-    nix.init(&config, &allocator);
-    parser.init(&config);
-
-    const action = try parser.parseArgs(&allocator);
-    return action();
+test "simple test" {
+    var list = std.ArrayList(i32).init(std.testing.allocator);
+    defer list.deinit(); // try commenting this out and see if zig detects the memory leak!
+    try list.append(42);
+    try std.testing.expectEqual(@as(i32, 42), list.pop());
 }
