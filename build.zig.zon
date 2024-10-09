@@ -11,6 +11,10 @@
             .url = "git+https://github.com/ziglibs/known-folders.git#1cceeb70e77dec941a4178160ff6c8d05a74de6f",
             .hash = "12205f5e7505c96573f6fc5144592ec38942fb0a326d692f9cddc0c7dd38f9028f29",
         },
+        .tomlz = .{
+            .url = "git+https://github.com/mattyhall/tomlz.git#bb7706fb5a752526f74ce544fc15125be8e58495",
+            .hash = "12207ffcc21b74386d241268719cffdd9ac124932f368286fa5deda1e0d230b41a53",
+        },
     },
 
     .paths = .{

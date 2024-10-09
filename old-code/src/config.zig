@@ -1,7 +1,0 @@
-system: bool = false,
-home: bool = false,
-use_flake: bool = false,
-flake_path: []const u8 = undefined,
-nix_on_droid: bool = false,
-hostname: []const u8 = undefined,
-root_command: []const u8 = undefined,

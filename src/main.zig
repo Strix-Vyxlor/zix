@@ -1,6 +1,7 @@
 const std = @import("std");
 const cli = @import("zig-cli");
 const knownFolders = @import("known-folders");
+const tomlz = @import("tomlz");
 
 var config = struct {
     system_only: bool = false,
@@ -152,7 +153,38 @@ fn parser() cli.AppRunner.Error!cli.ExecFn {
     return r.getAction(&arg_parser);
 }
 
+fn load_config() !void {
+    const c = &config;
+    var conf_dir = try knownFolders.open(allocator, knownFolders.KnownFolder.local_configuration, .{});
+    defer conf_dir.?.close();
+
+    if (conf_dir) |dir| {
+        const conf_file = dir.openFile("zix/conf.toml", .{}) catch |err| {
+            switch (err) {
+                std.fs.File.OpenError.FileNotFound => {
+                    std.debug.print("found no config", .{});
+                    return;
+                },
+                else => return err,
+            }
+        };
+        defer conf_file.close();
+
+        const stat = try conf_file.stat();
+        const buffer = try conf_file.readToEndAlloc(allocator, stat.size);
+        defer allocator.free(buffer);
+
+        var table = try tomlz.parse(allocator, buffer);
+        c.nix_on_droid = table.getBool("nix_on_droid") orelse false;
+        c.flake_path = table.getString("flake_path") orelse null;
+        c.hostname = table.getString("hostname") orelse null;
+        c.root_command = table.getString("root_command") orelse null;
+    }
+}
+
 pub fn main() !void {
+    try load_config();
+
     const action = try parser();
     return action();
 }
