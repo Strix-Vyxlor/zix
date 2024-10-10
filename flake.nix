@@ -28,26 +28,20 @@
         package = {
           version = "0.3.0";
           name = "zix";
-          #  dev_src = pkgs.fetchFromGitHub{
-          #    owner = "Strix-Vyxlor";
-          #    repo = "zix";
-          #    rev = "master";
-          #    hash = "sha256-fC9GqHXO6s2uaCxKAoMv5kNgwoY2srQ7MwDbuaVBhqs=";
-          #  };
 
           src = pkgs.fetchzip {
-            url = "https://github.com/Strix-Vyxlor/zix/archive/refs/tags/0.2.3.tar.gz";
-            hash = "sha256-uQjMHRqFK+7s90ezHW41zKD0xfwC8UvsPmcVbXZUOag=";
+            url = "https://github.com/Strix-Vyxlor/zix/archive/refs/tags/0.3.0.tar.gz";
+            hash = "sha256-hZqbUoyaPRKUXWIf1y48Tpu+iSaFBt5Rflwru6La3UU=";
           };
 
           srcPrebuild-x86_64-linux = pkgs.fetchzip {
-            url = "https://github.com/Strix-Vyxlor/zix/releases/download/0.2.3/zix-x86_64-linux.tar.gz";
-            hash = "sha256-kuiaED9f9VHXZLkathcdNEf0dr1mKbUgTrgjfjkM7Js=";
+            url = "https://github.com/Strix-Vyxlor/zix/releases/download/0.3.0/zix-x86_64-linux.tar.gz";
+            hash = "sha256-9/7GWSdXFf7na2osUAEGrq6CWQdy07umPCUDKCunjs0=";
           };
 
           srcPrebuild-aarch64-linux = pkgs.fetchzip {
-            url = "https://github.com/Strix-Vyxlor/zix/releases/download/0.2.3/zix-aarch64-linux.tar.gz";
-            hash = "sha256-64gDuBtclRu2z3eYeI89hjPPzsmr0Oz5j97rQnQj2Iw=";
+            url = "https://github.com/Strix-Vyxlor/zix/releases/download/0.3.0/zix-aarch64-linux.tar.gz";
+            hash = "sha256-cZLV29sHYrrf7Rym2P4qTd/2wda1W1KevFP0xx1wQYg=";
           };
 
           master = pkgs.stdenvNoCC.mkDerivation {

@@ -1,13 +1,10 @@
 # zix, a nix helper writen in zig
 
 configure zix with a json file.
-config at ```~/.config/zix/zix.conf```:
+config at ```~/.config/zix/conf.toml```:
 ```
-{
-  "flake": false,
-  "path": ".nix-config",
-  "hostname": "none",
-  "nix-on-droid": false,
-  "root-command": "sudo",
-}
+nix_on_droid = <bool>
+flake_path = <path to flake relative to home>
+hostname = <hostname defined in config>
+root_command <name of command to get root priviliges eg. sudo or doas>
 ```
