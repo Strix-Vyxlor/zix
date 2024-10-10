@@ -26,7 +26,7 @@
       system: let
         pkgs = nixpkgsFor.${system};
         package = {
-          version = "0.2.3";
+          version = "0.3.0";
           name = "zix";
           #  dev_src = pkgs.fetchFromGitHub{
           #    owner = "Strix-Vyxlor";
@@ -49,29 +49,42 @@
             url = "https://github.com/Strix-Vyxlor/zix/releases/download/0.2.3/zix-aarch64-linux.tar.gz";
             hash = "sha256-64gDuBtclRu2z3eYeI89hjPPzsmr0Oz5j97rQnQj2Iw=";
           };
+
+          master = pkgs.stdenvNoCC.mkDerivation {
+            name = package.name;
+            version = "master";
+            src = ./.;
+            nativeBuildInputs = [pkgs.zig];
+            dontConfigure = true;
+            dontInstall = true;
+            doCheck = true;
+            buildPhase = ''
+              mkdir -p .cache
+              ln -s ${pkgs.callPackage ./deps.nix {zig = pkgs.zig;}} .cache/p
+              zig build install --cache-dir $(pwd)/.zig-cache --global-cache-dir $(pwd)/.cache -Dcpu=baseline -Doptimize=ReleaseSafe --prefix $out
+            '';
+          };
         };
       in {
-        default = pkgs.stdenv.mkDerivation {
-          # package name and src dir
+        zix = package.master;
+        default = package.master;
+
+        stable = pkgs.stdenvNoCC.mkDerivation {
           name = package.name;
-          src = package.src;
           version = package.version;
-
-          # build packages
-          nativeBuildInputs = with pkgs; [
-            zig.hook
-          ];
-
-          postPatch = ''
-            ln -s ${pkgs.callPackage ./deps.nix {}} $ZIG_GLOBAL_CACHE_DIR/p
-          '';
-
-          configurePhase = ''
-            mkdir -p $out/
+          src = package.src;
+          nativeBuildInputs = [pkgs.zig];
+          dontConfigure = true;
+          dontInstall = true;
+          doCheck = true;
+          buildPhase = ''
+            mkdir -p .cache
+            ln -s ${pkgs.callPackage ./deps.nix {zig = pkgs.zig;}} .cache/p
+            zig build install --cache-dir $(pwd)/.zig-cache --global-cache-dir $(pwd)/.cache -Dcpu=baseline -Doptimize=ReleaseSafe --prefix $out
           '';
         };
 
-        prebuild = pkgs.stdenv.mkDerivation {
+        prebuild = pkgs.stdenvNoCC.mkDerivation {
           name = package.name;
           src = package."srcPrebuild-${system}";
           version = package.version;
@@ -83,25 +96,6 @@
             cp zix $out/bin -r
           '';
         };
-
-        #devel = pkgs.stdenv.mkDerivation {
-        #  # package name and src dir
-        #  name = package.name;
-        #  src = package.dev_src;
-
-        #  # build packages
-        #  nativeBuildInputs = with pkgs; [
-        #    zig.hook
-        #  ];
-
-        #  postPatch = ''
-        #    ln -s ${pkgs.callPackage ./deps.nix { }} $ZIG_GLOBAL_CACHE_DIR/p
-        # '';
-
-        #  configurePhase = ''
-        #    mkdir -p $out/
-        #  '';
-        #};
       }
     );
   };

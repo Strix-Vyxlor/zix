@@ -1,0 +1,17 @@
+{
+  "1220ab73fb7cc11b2308edc3364988e05efcddbcac31b707f55e6216d1b9c0da13f1": {
+    "name": "zig-cli",
+    "url": "https://github.com/sam701/zig-cli/archive/refs/tags/last-zig-0.13.tar.gz",
+    "hash": "sha256-35gYjyaajsMQhtb+dNNGPXTV1ZY5qw10kUaBWDuDZYo="
+  },
+  "12205f5e7505c96573f6fc5144592ec38942fb0a326d692f9cddc0c7dd38f9028f29": {
+    "name": "known-folders",
+    "url": "git+https://github.com/ziglibs/known-folders.git#1cceeb70e77dec941a4178160ff6c8d05a74de6f",
+    "hash": "sha256-jVqUWsSYm84/8XYTHOdWUuz+RyaMO6BvEtOa9lRGJc8="
+  },
+  "12207ffcc21b74386d241268719cffdd9ac124932f368286fa5deda1e0d230b41a53": {
+    "name": "tomlz",
+    "url": "git+https://github.com/mattyhall/tomlz.git#bb7706fb5a752526f74ce544fc15125be8e58495",
+    "hash": "sha256-eZ5oyona/IkFuQ7WfP8vsQcvXr+I39scDFk5X0au4Fw="
+  }
+}
