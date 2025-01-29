@@ -10,6 +10,7 @@ var config = struct {
     flake_path: ?[]const u8 = null,
     hostname: ?[]const u8 = null,
     root_command: ?[]const u8 = null,
+    inputs: []const []const u8 = undefined,
 }{};
 
 var gpa = std.heap.GeneralPurposeAllocator(.{}){};
@@ -23,11 +24,11 @@ fn spawn(command: []const []const u8) !void {
     _ = try cmd.wait();
 }
 
-pub fn getFlakePath() ![]const u8 {
+pub fn getFlakePath(no_hostname: bool) ![]const u8 {
     const c = &config;
     const home: ?[]const u8 = try knownFolders.getPath(allocator, knownFolders.KnownFolder.home);
 
-    if (c.hostname == null) {
+    if (c.hostname == null or no_hostname) {
         const path: []const u8 = try std.fmt.allocPrint(allocator, "{s}/{s}", .{ home.?, config.flake_path.? });
         return path;
     } else {
@@ -37,7 +38,7 @@ pub fn getFlakePath() ![]const u8 {
 }
 
 fn sync_nixos() !void {
-    const path = try getFlakePath();
+    const path = try getFlakePath(false);
     try std.io.getStdOut().writer().print("syncing nix config at {s}\n\n", .{path});
 
     const command = &[_][]const u8{ config.root_command orelse "sudo", "nixos-rebuild", "switch", "--flake", path };
@@ -45,7 +46,7 @@ fn sync_nixos() !void {
 }
 
 fn sync_home() !void {
-    const path = try getFlakePath();
+    const path = try getFlakePath(false);
     try std.io.getStdOut().writer().print("syncing home-manager at {s}\n\n", .{path});
 
     const home = &[_][]const u8{ "home-manager", "-b", "hbk", "switch", "--flake", path };
@@ -63,7 +64,7 @@ fn sync() !void {
             const command = &[_][]const u8{ "nix-on-droid", "switch" };
             try spawn(command);
         } else {
-            const path = try getFlakePath();
+            const path = try getFlakePath(false);
             try stdout.print("syncing nix system config at {s}\n\n", .{path});
 
             const command = &[_][]const u8{ "nix-on-droid", "switch", "--flake", path };
@@ -85,6 +86,20 @@ fn sync() !void {
                 try sync_home();
             }
         }
+    }
+}
+
+fn update() !void {
+    const path = try getFlakePath(true);
+    if (config.inputs.len == @as(usize, 0)) {
+        const command = &[_][]const u8{ "nix", "flake", "update", "--flake", path };
+        try spawn(command);
+    } else {
+        var command = std.ArrayList([]const u8).init(allocator);
+        defer command.deinit();
+        try command.appendSlice(&[_][]const u8{ "nix", "flake", "update", "--flake", path });
+        try command.appendSlice(config.inputs);
+        try spawn(command.items);
     }
 }
 
@@ -143,6 +158,27 @@ fn parser() cli.AppRunner.Error!cli.ExecFn {
                             },
                         },
                     },
+                    cli.Command{
+                        .name = "update",
+                        .description = cli.Description{
+                            .one_line = "update flake inputs",
+                            .detailed = "update flake inputs",
+                        },
+                        .target = cli.CommandTarget{
+                            .action = cli.CommandAction{
+                                .positional_args = cli.PositionalArgs{
+                                    .optional = try r.mkSlice(cli.PositionalArg, &.{
+                                        .{
+                                            .name = "inputs",
+                                            .help = "inputs to update",
+                                            .value_ref = r.mkRef(&config.inputs),
+                                        },
+                                    }),
+                                },
+                                .exec = update,
+                            },
+                        },
+                    },
                 },
             },
         },
@@ -184,6 +220,7 @@ fn load_config() !void {
 
 pub fn main() !void {
     try load_config();
+    defer arena.deinit();
 
     const action = try parser();
     return action();

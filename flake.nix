@@ -26,11 +26,11 @@
       system: let
         pkgs = nixpkgsFor.${system};
         package = {
-          version = "0.3.0";
+          version = "0.3.1";
           name = "zix";
 
           src = pkgs.fetchzip {
-            url = "https://github.com/Strix-Vyxlor/zix/archive/refs/tags/0.3.0.tar.gz";
+            url = "https://github.com/Strix-Vyxlor/zix/archive/refs/tags/0.3.1.tar.gz";
             hash = "sha256-hZqbUoyaPRKUXWIf1y48Tpu+iSaFBt5Rflwru6La3UU=";
           };
 
