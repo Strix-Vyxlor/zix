@@ -37,6 +37,7 @@ pub fn getFlakePath(no_hostname: bool) ![]const u8 {
     }
 }
 
+// nixos functions
 fn sync_nixos() !void {
     const path = try getFlakePath(false);
     try std.io.getStdOut().writer().print("syncing nix config at {s}\n\n", .{path});
@@ -53,23 +54,31 @@ fn sync_home() !void {
     try spawn(home);
 }
 
+// nix on droid
+fn sync_nixondroid() !void {
+    const stdout = std.io.getStdOut().writer();
+
+    if (&config.flake_path == null) {
+        try stdout.print("syncing config: nix-on-droid switch\n\n", .{});
+
+        const command = &[_][]const u8{ "nix-on-droid", "switch" };
+        try spawn(command);
+    } else {
+        const path = try getFlakePath(false);
+        try stdout.print("syncing nix system config at {s}\n\n", .{path});
+
+        const command = &[_][]const u8{ "nix-on-droid", "switch", "--flake", path };
+        try spawn(command);
+    }
+}
+
+// wraper
 fn sync() !void {
     const stdout = std.io.getStdOut().writer();
 
     const c = &config;
     if (c.nix_on_droid) {
-        if (c.flake_path == null) {
-            try stdout.print("syncing config: nix-on-droid switch\n\n", .{});
-
-            const command = &[_][]const u8{ "nix-on-droid", "switch" };
-            try spawn(command);
-        } else {
-            const path = try getFlakePath(false);
-            try stdout.print("syncing nix system config at {s}\n\n", .{path});
-
-            const command = &[_][]const u8{ "nix-on-droid", "switch", "--flake", path };
-            try spawn(command);
-        }
+        try sync_nixondroid();
     } else {
         if (c.flake_path == null) {
             try stdout.print("syncing nixos", .{});
@@ -89,6 +98,7 @@ fn sync() !void {
     }
 }
 
+// update flake inputs
 fn update() !void {
     const path = try getFlakePath(true);
     if (config.inputs.len == @as(usize, 0)) {
@@ -103,6 +113,7 @@ fn update() !void {
     }
 }
 
+// cli
 fn parser() cli.AppRunner.Error!cli.ExecFn {
     var r = try cli.AppRunner.init(allocator);
 
@@ -182,13 +193,14 @@ fn parser() cli.AppRunner.Error!cli.ExecFn {
                 },
             },
         },
-        .version = "0.3.0",
+        .version = "0.3.1",
         .author = "Strix Vyxlor",
     };
 
     return r.getAction(&arg_parser);
 }
 
+// config loading
 fn load_config() !void {
     const c = &config;
     var conf_dir = try knownFolders.open(allocator, knownFolders.KnownFolder.local_configuration, .{});
