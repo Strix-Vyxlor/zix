@@ -26,12 +26,12 @@
       system: let
         pkgs = nixpkgsFor.${system};
         package = {
-          version = "0.3.1";
+          version = "0.3.2";
           name = "zix";
 
           src = pkgs.fetchzip {
-            url = "https://github.com/Strix-Vyxlor/zix/archive/refs/tags/0.3.1.tar.gz";
-            hash = "sha256-edwBoS3O84+TTqcZAUJ/cLPp2S0N5dDIHnMW+Ecc+Ow=";
+            url = "https://github.com/Strix-Vyxlor/zix/archive/refs/tags/0.3.2.tar.gz";
+            hash = "sha256-aaaaaaaaaaaaaaaaaaaaaa";
           };
 
           srcPrebuild-x86_64-linux = pkgs.fetchzip {

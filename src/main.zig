@@ -7,6 +7,7 @@ var config = struct {
     system_only: bool = false,
     home_only: bool = false,
     nix_on_droid: bool = false,
+    update: bool = false,
     flake_path: ?[]const u8 = null,
     hostname: ?[]const u8 = null,
     root_command: ?[]const u8 = null,
@@ -58,7 +59,8 @@ fn sync_home() !void {
 fn sync_nixondroid() !void {
     const stdout = std.io.getStdOut().writer();
 
-    if (&config.flake_path == null) {
+    const c = &config;
+    if (c.flake_path == null) {
         try stdout.print("syncing config: nix-on-droid switch\n\n", .{});
 
         const command = &[_][]const u8{ "nix-on-droid", "switch" };
@@ -72,11 +74,31 @@ fn sync_nixondroid() !void {
     }
 }
 
+// update flake inputs
+fn update() !void {
+    const path = try getFlakePath(true);
+    if (config.inputs.len == @as(usize, 0)) {
+        const command = &[_][]const u8{ "nix", "flake", "update", "--flake", path };
+        try spawn(command);
+    } else {
+        var command = std.ArrayList([]const u8).init(allocator);
+        defer command.deinit();
+        try command.appendSlice(&[_][]const u8{ "nix", "flake", "update", "--flake", path });
+        try command.appendSlice(config.inputs);
+        try spawn(command.items);
+    }
+}
+
 // wraper
 fn sync() !void {
     const stdout = std.io.getStdOut().writer();
 
     const c = &config;
+
+    if (c.update) {
+        try update();
+    }
+
     if (c.nix_on_droid) {
         try sync_nixondroid();
     } else {
@@ -95,21 +117,6 @@ fn sync() !void {
                 try sync_home();
             }
         }
-    }
-}
-
-// update flake inputs
-fn update() !void {
-    const path = try getFlakePath(true);
-    if (config.inputs.len == @as(usize, 0)) {
-        const command = &[_][]const u8{ "nix", "flake", "update", "--flake", path };
-        try spawn(command);
-    } else {
-        var command = std.ArrayList([]const u8).init(allocator);
-        defer command.deinit();
-        try command.appendSlice(&[_][]const u8{ "nix", "flake", "update", "--flake", path });
-        try command.appendSlice(config.inputs);
-        try spawn(command.items);
     }
 }
 
@@ -162,6 +169,12 @@ fn parser() cli.AppRunner.Error!cli.ExecFn {
                                 .help = "only sync home manager configuration",
                                 .value_ref = r.mkRef(&config.home_only),
                             },
+                            .{
+                                .long_name = "update",
+                                .short_alias = 'u',
+                                .help = "update flake inputs before sync",
+                                .value_ref = r.mkRef(&config.update),
+                            },
                         },
                         .target = cli.CommandTarget{
                             .action = cli.CommandAction{
@@ -193,7 +206,7 @@ fn parser() cli.AppRunner.Error!cli.ExecFn {
                 },
             },
         },
-        .version = "0.3.1",
+        .version = "0.3.2",
         .author = "Strix Vyxlor",
     };
 
