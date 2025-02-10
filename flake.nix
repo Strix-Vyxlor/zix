@@ -31,7 +31,7 @@
 
           src = pkgs.fetchzip {
             url = "https://github.com/Strix-Vyxlor/zix/archive/refs/tags/0.3.2.tar.gz";
-            hash = "sha256-aaaaaaaaaaaaaaaaaaaaaa";
+            hash = "sha256-f6JWeEzCVXZs7paNRMvhG4SdlNcMhxZTKeg1Aj7IG/E=";
           };
 
           srcPrebuild-x86_64-linux = pkgs.fetchzip {
