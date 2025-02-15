@@ -26,21 +26,21 @@
       system: let
         pkgs = nixpkgsFor.${system};
         package = {
-          version = "0.3.2";
+          version = "0.3.3";
           name = "zix";
 
           src = pkgs.fetchzip {
-            url = "https://github.com/Strix-Vyxlor/zix/archive/refs/tags/0.3.2.tar.gz";
+            url = "https://github.com/Strix-Vyxlor/zix/archive/refs/tags/0.3.3.tar.gz";
             hash = "sha256-f6JWeEzCVXZs7paNRMvhG4SdlNcMhxZTKeg1Aj7IG/E=";
           };
 
           srcPrebuild-x86_64-linux = pkgs.fetchzip {
-            url = "https://github.com/Strix-Vyxlor/zix/releases/download/0.3.0/zix-x86_64-linux.tar.gz";
+            url = "https://github.com/Strix-Vyxlor/zix/releases/download/0.3.3/zix-x86_64-linux.tar.gz";
             hash = "sha256-9/7GWSdXFf7na2osUAEGrq6CWQdy07umPCUDKCunjs0=";
           };
 
           srcPrebuild-aarch64-linux = pkgs.fetchzip {
-            url = "https://github.com/Strix-Vyxlor/zix/releases/download/0.3.0/zix-aarch64-linux.tar.gz";
+            url = "https://github.com/Strix-Vyxlor/zix/releases/download/0.3.3/zix-aarch64-linux.tar.gz";
             hash = "sha256-cZLV29sHYrrf7Rym2P4qTd/2wda1W1KevFP0xx1wQYg=";
           };
 

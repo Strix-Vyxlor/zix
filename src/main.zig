@@ -8,6 +8,7 @@ var config = struct {
     home_only: bool = false,
     nix_on_droid: bool = false,
     update: bool = false,
+    collect_garbage: ?u32 = null,
     flake_path: ?[]const u8 = null,
     hostname: ?[]const u8 = null,
     root_command: ?[]const u8 = null,
@@ -76,6 +77,9 @@ fn sync_nixondroid() !void {
 
 // update flake inputs
 fn update() !void {
+    const stdout = std.io.getStdOut().writer();
+    try stdout.print("updating flake inputs\n\n", .{});
+
     const path = try getFlakePath(true);
     if (config.inputs.len == @as(usize, 0)) {
         const command = &[_][]const u8{ "nix", "flake", "update", "--flake", path };
@@ -89,6 +93,26 @@ fn update() !void {
     }
 }
 
+// cleaning functions
+fn garbage() !void {
+    const stdout = std.io.getStdOut().writer();
+    const c = &config;
+
+    const value: u32 = c.collect_garbage orelse 30;
+
+    try stdout.print("deleting garbage older than {} days", .{value});
+
+    var peroid = std.ArrayList(u8).init(allocator);
+    defer peroid.deinit();
+    _ = try peroid.writer().print("{}d", .{value});
+
+    var command = std.ArrayList([]const u8).init(allocator);
+    defer command.deinit();
+    try command.appendSlice(&[_][]const u8{ "nix-collect-garbage", "--delete-older-than" });
+    try command.append(peroid.items);
+    try spawn(command.items);
+}
+
 // wraper
 fn sync() !void {
     const stdout = std.io.getStdOut().writer();
@@ -97,6 +121,10 @@ fn sync() !void {
 
     if (c.update) {
         try update();
+    }
+
+    if (c.collect_garbage != null) {
+        try garbage();
     }
 
     if (c.nix_on_droid) {
@@ -175,6 +203,12 @@ fn parser() cli.AppRunner.Error!cli.ExecFn {
                                 .help = "update flake inputs before sync",
                                 .value_ref = r.mkRef(&config.update),
                             },
+                            .{
+                                .long_name = "garbage",
+                                .short_alias = 'g',
+                                .help = "collect garbage older than X days",
+                                .value_ref = r.mkRef(&config.collect_garbage),
+                            },
                         },
                         .target = cli.CommandTarget{
                             .action = cli.CommandAction{
@@ -203,10 +237,31 @@ fn parser() cli.AppRunner.Error!cli.ExecFn {
                             },
                         },
                     },
+                    cli.Command{
+                        .name = "garbage",
+                        .description = cli.Description{
+                            .one_line = "collect garbage older than x days",
+                            .detailed = "runs nix collcect garbage",
+                        },
+                        .target = cli.CommandTarget{
+                            .action = cli.CommandAction{
+                                .positional_args = cli.PositionalArgs{
+                                    .required = try r.mkSlice(cli.PositionalArg, &.{
+                                        .{
+                                            .name = "period",
+                                            .help = "delete older than period in days",
+                                            .value_ref = r.mkRef(&config.collect_garbage),
+                                        },
+                                    }),
+                                },
+                                .exec = garbage,
+                            },
+                        },
+                    },
                 },
             },
         },
-        .version = "0.3.2",
+        .version = "0.3.3",
         .author = "Strix Vyxlor",
     };
 
