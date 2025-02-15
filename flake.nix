@@ -31,17 +31,17 @@
 
           src = pkgs.fetchzip {
             url = "https://github.com/Strix-Vyxlor/zix/archive/refs/tags/0.3.3.tar.gz";
-            hash = "sha256-f6JWeEzCVXZs7paNRMvhG4SdlNcMhxZTKeg1Aj7IG/E=";
+            hash = "sha256-0cwDHs4x92YoEF/Lpj18AiVwD0M+V3yENcjgXxdCmAM=";
           };
 
           srcPrebuild-x86_64-linux = pkgs.fetchzip {
             url = "https://github.com/Strix-Vyxlor/zix/releases/download/0.3.3/zix-x86_64-linux.tar.gz";
-            hash = "sha256-9/7GWSdXFf7na2osUAEGrq6CWQdy07umPCUDKCunjs0=";
+            hash = "sha256-6XZRHkBN0UYcwSpxXvpzghu6F6QZmRnI0CjaoJPtlt0=";
           };
 
           srcPrebuild-aarch64-linux = pkgs.fetchzip {
             url = "https://github.com/Strix-Vyxlor/zix/releases/download/0.3.3/zix-aarch64-linux.tar.gz";
-            hash = "sha256-cZLV29sHYrrf7Rym2P4qTd/2wda1W1KevFP0xx1wQYg=";
+            hash = "sha256-MDZRTjIfVD/5VoJRLQNdlrkZYHEWKIWc2ai13UYi0Gg=";
           };
 
           master = pkgs.stdenvNoCC.mkDerivation {
