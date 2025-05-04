@@ -5,13 +5,13 @@
   ...
 }: let
   inherit (lib) mkOption types mkIf;
-  cfg = config.strixvim;
+  cfg = config.programs.zix;
 in {
   imports = [
     ./overlay.nix
   ];
 
-  options.zix = {
+  options.programs.zix = {
     enable = mkOption {
       type = types.bool;
       default = false;
