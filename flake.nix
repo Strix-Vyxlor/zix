@@ -3,11 +3,10 @@
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
-    zig2nix.url = "github:Cloudef/zig2nix";
   };
 
   outputs = inputs @ {self, ...}: let
-    zix-overlay = import ./overlay.nix {inherit (inputs.zig2nix.outputs) zig-env;};
+    zix-overlay = import ./overlay.nix;
   in
     inputs.flake-utils.lib.eachDefaultSystem (system: let
       pkgs = import inputs.nixpkgs {
@@ -31,7 +30,7 @@
     })
     // {
       homeManagerModules = rec {
-        zix = import ./module {inherit (inputs.zig2nix.outputs) zig-env;};
+        zix = ./module;
         default = zix;
       };
 

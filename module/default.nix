@@ -1,4 +1,4 @@
-{zig-env}: {
+{
   pkgs,
   lib,
   config,
@@ -8,7 +8,7 @@
   cfg = config.programs.zix;
 in {
   imports = [
-    (import ./overlay.nix {inherit zig-env;})
+    ./overlay.nix
   ];
 
   options.programs.zix = {
