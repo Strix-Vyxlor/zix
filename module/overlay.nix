@@ -1,5 +1,5 @@
 {...}: {
   nixpkgs.overlays = [
-    ../overlay.nix
+    (import ../overlay.nix)
   ];
 }
