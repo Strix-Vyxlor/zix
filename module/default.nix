@@ -21,7 +21,7 @@ in {
     };
     package = mkOption {
       type = types.package;
-      default = pkgs.zix;
+      default = pkgs.strix-zix;
       description = ''
         package to use
       '';

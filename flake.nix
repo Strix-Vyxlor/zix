@@ -18,8 +18,8 @@
     in {
       packages = rec {
         default = zix;
-        zix = pkgs.zix;
-        zix-stable = pkgs.zix-stable;
+        zix = pkgs.strix-zix;
+        zix-stable = pkgs.strix-zix-stable;
       };
       devShells.default = pkgs.mkShell {
         packages = with pkgs; [
