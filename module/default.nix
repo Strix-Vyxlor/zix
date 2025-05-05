@@ -67,9 +67,9 @@ in {
         then "true"
         else "false"
       }
-      flake_path = ${builtins.toString cfg.config.flake_path}
-      hostname = ${cfg.config.hostname}
-      root_command = ${cfg.config.root_command}
+      flake_path = "${builtins.toString cfg.config.flake_path}"
+      hostname = "${cfg.config.hostname}"
+      root_command = "${cfg.config.root_command}"
     '';
   };
 }
