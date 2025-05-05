@@ -28,13 +28,12 @@ fn spawn(command: []const []const u8) !void {
 
 pub fn getFlakePath(no_hostname: bool) ![]const u8 {
     const c = &config;
-    const home: ?[]const u8 = try knownFolders.getPath(allocator, knownFolders.KnownFolder.home);
 
     if (c.hostname == null or no_hostname) {
-        const path: []const u8 = try std.fmt.allocPrint(allocator, "{s}/{s}", .{ home.?, config.flake_path.? });
+        const path: []const u8 = try std.fmt.allocPrint(allocator, "{s}", .{ home.?, config.flake_path.? });
         return path;
     } else {
-        const path: []const u8 = try std.fmt.allocPrint(allocator, "{s}/{s}#{s}", .{ home.?, config.flake_path.?, config.hostname.? });
+        const path: []const u8 = try std.fmt.allocPrint(allocator, "{s}#{s}", .{ home.?, config.flake_path.?, config.hostname.? });
         return path;
     }
 }

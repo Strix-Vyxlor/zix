@@ -5,7 +5,7 @@ config at `~/.config/zix/conf.toml`:
 
 ```
 nix_on_droid = <bool>
-flake_path = <path to flake relative to home>
+flake_path = <absolute path to flake>
 hostname = <hostname defined in config>
 root_command = <name of command to get root priviliges eg. sudo or doas>
 ```
