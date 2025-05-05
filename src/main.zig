@@ -225,7 +225,7 @@ fn parser() cli.AppRunner.Error!cli.ExecFn {
                         .target = cli.CommandTarget{
                             .action = cli.CommandAction{
                                 .positional_args = cli.PositionalArgs{
-                                    .optional = try r.mkSlice(cli.PositionalArg, &.{
+                                    .optional = try r.allocPositionalArgs(&.{
                                         .{
                                             .name = "inputs",
                                             .help = "inputs to update",
@@ -246,7 +246,7 @@ fn parser() cli.AppRunner.Error!cli.ExecFn {
                         .target = cli.CommandTarget{
                             .action = cli.CommandAction{
                                 .positional_args = cli.PositionalArgs{
-                                    .required = try r.mkSlice(cli.PositionalArg, &.{
+                                    .required = try r.allocPositionalArgs(&.{
                                         .{
                                             .name = "period",
                                             .help = "delete older than period in days",
@@ -261,7 +261,7 @@ fn parser() cli.AppRunner.Error!cli.ExecFn {
                 },
             },
         },
-        .version = "0.3.3",
+        .version = "0.3.4",
         .author = "Strix Vyxlor",
     };
 
@@ -305,4 +305,3 @@ pub fn main() !void {
     const action = try parser();
     return action();
 }
-

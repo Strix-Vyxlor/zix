@@ -1,25 +1,14 @@
 {
-  stdenvNoCC,
-  zig,
-  callPackage,
+  env,
   fetchzip,
   ...
-}:
-stdenvNoCC.mkDerivation {
-  name = "zix-stable";
-  version = "0.3.3";
+}: let
   src = fetchzip {
-    url = "https://github.com/Strix-Vyxlor/zix/archive/refs/tags/0.3.3.tar.gz";
+    url = "https://github.com/Strix-Vyxlor/zix/archive/refs/tags/0.3.4.tar.gz";
     hash = "sha256-0cwDHs4x92YoEF/Lpj18AiVwD0M+V3yENcjgXxdCmAM=";
   };
-
-  nativeBuildInputs = [zig];
-  dontConfigure = true;
-  dontInstall = true;
-  doCheck = true;
-  buildPhase = ''
-    mkdir -p .cache
-    ln -s ${callPackage ./deps.nix {inherit zig;}} .cache/p
-    zig build install --cache-dir $(pwd)/.zig-cache --global-cache-dir $(pwd)/.cache -Dcpu=baseline -Doptimize=ReleaseSafe --prefix $out
-  '';
-}
+in
+  env.package {
+    inherit src;
+    zigPreferMusl = false;
+  }

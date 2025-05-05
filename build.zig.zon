@@ -1,19 +1,20 @@
 .{
-    .name = "zix",
-    .version = "0.3.3",
+    .name = .zix,
+    .version = "0.3.4",
+    .fingerprint = 0x4cc61d748e661e73,
 
     .dependencies = .{
-        .@"zig-cli" = .{
-            .url = "https://github.com/sam701/zig-cli/archive/refs/tags/last-zig-0.13.tar.gz",
-            .hash = "1220ab73fb7cc11b2308edc3364988e05efcddbcac31b707f55e6216d1b9c0da13f1",
-        },
-        .@"known-folders" = .{
-            .url = "git+https://github.com/ziglibs/known-folders.git#1cceeb70e77dec941a4178160ff6c8d05a74de6f",
-            .hash = "12205f5e7505c96573f6fc5144592ec38942fb0a326d692f9cddc0c7dd38f9028f29",
+        .known_folders = .{
+            .url = "git+https://github.com/ziglibs/known-folders.git#aa24df42183ad415d10bc0a33e6238c437fc0f59",
+            .hash = "known_folders-0.0.0-Fy-PJtLDAADGDOwYwMkVydMSTp_aN-nfjCZw6qPQ2ECL",
         },
         .tomlz = .{
             .url = "git+https://github.com/mattyhall/tomlz.git#bb7706fb5a752526f74ce544fc15125be8e58495",
             .hash = "12207ffcc21b74386d241268719cffdd9ac124932f368286fa5deda1e0d230b41a53",
+        },
+        .cli = .{
+            .url = "git+https://github.com/sam701/zig-cli#9fca749122a321fd4af4fecafba0062b3e36db98",
+            .hash = "cli-0.9.0-2eKe_zP5AAD96LcpU9Gdo7vRHvHIKjYnyR9ME6si527r",
         },
     },
 

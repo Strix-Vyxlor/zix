@@ -4,23 +4,27 @@ pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
-    const zig_cli = b.dependency("zig-cli", .{ .target = target, .optimize = optimize });
-    const known_folders = b.dependency("known-folders", .{});
+    const zig_cli = b.dependency("cli", .{ .target = target, .optimize = optimize });
+    const known_folders = b.dependency("known_folders", .{ .target = target, .optimize = optimize });
     const tomlz = b.dependency("tomlz", .{
         .target = target,
         .optimize = optimize,
     });
 
-    const exe = b.addExecutable(.{
-        .name = "zix",
-        .root_source_file = b.path("src/main.zig"),
+    const exe_mod = b.createModule(.{
         .target = target,
         .optimize = optimize,
+        .root_source_file = b.path("src/main.zig"),
     });
 
-    exe.root_module.addImport("zig-cli", zig_cli.module("zig-cli"));
-    exe.root_module.addImport("known-folders", known_folders.module("known-folders"));
-    exe.root_module.addImport("tomlz", tomlz.module("tomlz"));
+    exe_mod.addImport("zig-cli", zig_cli.module("zig-cli"));
+    exe_mod.addImport("known-folders", known_folders.module("known-folders"));
+    exe_mod.addImport("tomlz", tomlz.module("tomlz"));
+
+    const exe = b.addExecutable(.{
+        .name = "zix",
+        .root_module = exe_mod,
+    });
 
     b.installArtifact(exe);
 
