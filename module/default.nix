@@ -62,7 +62,11 @@ in {
     home.packages = [cfg.package];
 
     home.file.".config/zix/conf.toml".text = ''
-      nix_on_droid = ${builtins.toString cfg.config.nix_on_droid}
+      nix_on_droid = ${
+        if cfg.config.nix_on_droid
+        then "true"
+        else "false"
+      }
       flake_path = ${builtins.toString cfg.config.flake_path}
       hostname = ${cfg.config.hostname}
       root_command = ${cfg.config.root_command}
