@@ -1,20 +1,20 @@
 {
-  "known_folders-0.0.0-Fy-PJtLDAADGDOwYwMkVydMSTp_aN-nfjCZw6qPQ2ECL": {
-    "name": "known_folders",
-    "url": "git+https://github.com/ziglibs/known-folders.git#aa24df42183ad415d10bc0a33e6238c437fc0f59",
-    "hash": "sha256-YiJ2lfG1xsGFMO6flk/BMhCqJ3kB3MnOX5fnfDEcmMY=",
-    "rev": "aa24df42183ad415d10bc0a33e6238c437fc0f59"
-  },
-  "12207ffcc21b74386d241268719cffdd9ac124932f368286fa5deda1e0d230b41a53": {
+  "N-V-__8AADiCAwBidXOdXeoSJ6s1iGcJ0m3N_Pt2P7MEkWb3": {
     "name": "tomlz",
-    "url": "git+https://github.com/mattyhall/tomlz.git#bb7706fb5a752526f74ce544fc15125be8e58495",
-    "hash": "sha256-eZ5oyona/IkFuQ7WfP8vsQcvXr+I39scDFk5X0au4Fw=",
-    "rev": "bb7706fb5a752526f74ce544fc15125be8e58495"
+    "url": "git+https://github.com/Scythe-Technology/tomlz.git#702c826500ff075302426de918f0e022911c1cc6",
+    "hash": "sha256-KbRfAwsRPXmONVzNe7g9dKSa/4SAmJ59KJIQXeKIre0=",
+    "rev": "702c826500ff075302426de918f0e022911c1cc6"
   },
-  "cli-0.9.0-2eKe_zP5AAD96LcpU9Gdo7vRHvHIKjYnyR9ME6si527r": {
+  "known_folders-0.0.0-Fy-PJtTTAADUOhGKM0sxzG4eMkNQxRvx9e5dfHVyaeA3": {
+    "name": "known_folders",
+    "url": "git+https://github.com/ziglibs/known-folders.git#ab5cf5feb936fa3b72c95d3ad0c0c67791937ba1",
+    "hash": "sha256-Pdn/nUclhHBB1COTzNNR5ysE13h6uLOFJjuFrasv/2I=",
+    "rev": "ab5cf5feb936fa3b72c95d3ad0c0c67791937ba1"
+  },
+  "cli-0.10.0-2eKe_5kEAQBeHqKxUHNTGnETzu81rqKWwT1WPt1jXBt0": {
     "name": "cli",
-    "url": "git+https://github.com/sam701/zig-cli#9fca749122a321fd4af4fecafba0062b3e36db98",
-    "hash": "sha256-PCuRlECGRWPTW2MtkUc4X4dKieVg4Ji4J4uHWJhxpL0=",
-    "rev": "9fca749122a321fd4af4fecafba0062b3e36db98"
+    "url": "git+https://github.com/sam701/zig-cli?ref=zig-0.15#cb44aade25a3c1eddd8b6f990b50c2189442c1e2",
+    "hash": "sha256-/rmfwWseEeqK7nDdSHKwOAPmdsBpFD9/1wg1uHLJ+eU=",
+    "rev": "cb44aade25a3c1eddd8b6f990b50c2189442c1e2"
   }
 }

@@ -17,7 +17,7 @@ pub fn build(b: *std.Build) void {
         .root_source_file = b.path("src/main.zig"),
     });
 
-    exe_mod.addImport("zig-cli", zig_cli.module("zig-cli"));
+    exe_mod.addImport("cli", zig_cli.module("cli"));
     exe_mod.addImport("known-folders", known_folders.module("known-folders"));
     exe_mod.addImport("tomlz", tomlz.module("tomlz"));
 

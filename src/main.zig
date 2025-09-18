@@ -1,5 +1,5 @@
 const std = @import("std");
-const cli = @import("zig-cli");
+const cli = @import("cli");
 const knownFolders = @import("known-folders");
 const tomlz = @import("tomlz");
 
@@ -26,7 +26,7 @@ fn spawn(command: []const []const u8) !void {
     _ = try cmd.wait();
 }
 
-pub fn getFlakePath(no_hostname: bool) ![]const u8 {
+fn getFlakePath(no_hostname: bool) ![]const u8 {
     const c = &config;
 
     if (c.hostname == null or no_hostname) {
@@ -38,10 +38,18 @@ pub fn getFlakePath(no_hostname: bool) ![]const u8 {
     }
 }
 
+fn print(comptime fmt: []const u8, args: anytype) !void {
+    var stdout_buffer: [1024]u8 = undefined;
+    var stdout_writer = std.fs.File.stdout().writer(&stdout_buffer);
+    const stdout = &stdout_writer.interface;
+    try stdout.print(fmt, args);
+    try stdout.flush();
+}
+
 // nixos functions
 fn sync_nixos() !void {
     const path = try getFlakePath(false);
-    try std.io.getStdOut().writer().print("syncing nix config at {s}\n\n", .{path});
+    try print("syncing nix config at {s}\n\n", .{path});
 
     const command = &[_][]const u8{ config.root_command orelse "sudo", "nixos-rebuild", "switch", "--flake", path };
     try spawn(command);
@@ -49,7 +57,7 @@ fn sync_nixos() !void {
 
 fn sync_home() !void {
     const path = try getFlakePath(false);
-    try std.io.getStdOut().writer().print("syncing home-manager at {s}\n\n", .{path});
+    try print("syncing home-manager at {s}\n\n", .{path});
 
     const home = &[_][]const u8{ "home-manager", "-b", "hbk", "switch", "--flake", path };
     try spawn(home);
@@ -57,17 +65,15 @@ fn sync_home() !void {
 
 // nix on droid
 fn sync_nixondroid() !void {
-    const stdout = std.io.getStdOut().writer();
-
     const c = &config;
     if (c.flake_path == null) {
-        try stdout.print("syncing config: nix-on-droid switch\n\n", .{});
+        try print("syncing config: nix-on-droid switch\n\n", .{});
 
         const command = &[_][]const u8{ "nix-on-droid", "switch" };
         try spawn(command);
     } else {
         const path = try getFlakePath(false);
-        try stdout.print("syncing nix system config at {s}\n\n", .{path});
+        try print("syncing nix system config at {s}\n\n", .{path});
 
         const command = &[_][]const u8{ "nix-on-droid", "switch", "--flake", path };
         try spawn(command);
@@ -76,46 +82,42 @@ fn sync_nixondroid() !void {
 
 // update flake inputs
 fn update() !void {
-    const stdout = std.io.getStdOut().writer();
-    try stdout.print("updating flake inputs\n\n", .{});
+    try print("updating flake inputs\n\n", .{});
 
     const path = try getFlakePath(true);
     if (config.inputs.len == @as(usize, 0)) {
         const command = &[_][]const u8{ "nix", "flake", "update", "--flake", path };
         try spawn(command);
     } else {
-        var command = std.ArrayList([]const u8).init(allocator);
-        defer command.deinit();
-        try command.appendSlice(&[_][]const u8{ "nix", "flake", "update", "--flake", path });
-        try command.appendSlice(config.inputs);
+        var command = std.ArrayList([]const u8).empty;
+        defer command.deinit(allocator);
+        try command.appendSlice(allocator, &[_][]const u8{ "nix", "flake", "update", "--flake", path });
+        try command.appendSlice(allocator, config.inputs);
         try spawn(command.items);
     }
 }
 
 // cleaning functions
 fn garbage() !void {
-    const stdout = std.io.getStdOut().writer();
     const c = &config;
 
     const value: u32 = c.collect_garbage orelse 30;
 
-    try stdout.print("deleting garbage older than {} days", .{value});
+    try print("deleting garbage older than {} days", .{value});
 
-    var peroid = std.ArrayList(u8).init(allocator);
-    defer peroid.deinit();
-    _ = try peroid.writer().print("{}d", .{value});
+    var peroid = std.ArrayList(u8).empty;
+    defer peroid.deinit(allocator);
+    _ = try peroid.writer(allocator).print("{}d", .{value});
 
-    var command = std.ArrayList([]const u8).init(allocator);
-    defer command.deinit();
-    try command.appendSlice(&[_][]const u8{ "nix-collect-garbage", "--delete-older-than" });
-    try command.append(peroid.items);
+    var command = std.ArrayList([]const u8).empty;
+    defer command.deinit(allocator);
+    try command.appendSlice(allocator, &[_][]const u8{ "nix-collect-garbage", "--delete-older-than" });
+    try command.append(allocator, peroid.items);
     try spawn(command.items);
 }
 
 // wraper
 fn sync() !void {
-    const stdout = std.io.getStdOut().writer();
-
     const c = &config;
 
     if (c.update) {
@@ -130,7 +132,7 @@ fn sync() !void {
         try sync_nixondroid();
     } else {
         if (c.flake_path == null) {
-            try stdout.print("syncing nixos", .{});
+            try print("syncing nixos", .{});
 
             const command = &[_][]const u8{ config.root_command orelse "sudo", "nixos-rebuild", "switch" };
             try spawn(command);
@@ -260,7 +262,7 @@ fn parser() cli.AppRunner.Error!cli.ExecFn {
                 },
             },
         },
-        .version = "0.3.4",
+        .version = "0.4.0",
         .author = "Strix Vyxlor",
     };
 
