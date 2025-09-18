@@ -7,10 +7,10 @@
 }:
 stdenvNoCC.mkDerivation {
   name = "zix-stable";
-  version = "0.3.4";
+  version = "0.4.0";
   src = fetchzip {
-    url = "https://github.com/Strix-Vyxlor/zix/archive/refs/tags/0.3.4.tar.gz";
-    hash = "sha256-1WdmjCdgN7yK4vwUYVvOaZMkI5+pKC8i/c7UDx8INP4=";
+    url = "https://github.com/Strix-Vyxlor/zix/archive/refs/tags/0.4.0.tar.gz";
+    hash = "sha256-FUhEZHyZJzaaDzc/uWl7c2aFrqirHAYlVCjH+J4G3Gk=";
   };
   nativeBuildInputs = [zig];
   dontConfigure = true;

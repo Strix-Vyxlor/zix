@@ -18,6 +18,7 @@
     in {
       packages = rec {
         default = zix;
+        stable = zix-stable;
         zix = pkgs.strix-zix;
         zix-stable = pkgs.strix-zix-stable;
       };
