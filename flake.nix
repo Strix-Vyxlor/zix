@@ -1,14 +1,11 @@
 {
   description = "Base nix flake for dev enviroment, uzing zsh";
-  inputs = {
-    nixpkgs.url = "nixpkgs/nixos-unstable";
-    flake-utils.url = "github:numtide/flake-utils";
-  };
 
   outputs = inputs @ {self, ...}: let
-    zix-overlay = import ./overlay.nix;
+    zix-overlay = import ./overlay.nix inputs;
+    systems = builtins.attrNames inputs.zig.packages;
   in
-    inputs.flake-utils.lib.eachDefaultSystem (system: let
+    inputs.flake-utils.lib.eachSystem systems (system: let
       pkgs = import inputs.nixpkgs {
         inherit system;
         overlays = [
@@ -24,7 +21,7 @@
       };
       devShells.default = pkgs.mkShell {
         packages = with pkgs; [
-          zig
+          zigpkgs."0.15.1"
           zls
         ];
       };
@@ -40,4 +37,10 @@
         zix = zix-overlay;
       };
     };
+
+  inputs = {
+    nixpkgs.url = "nixpkgs/nixos-unstable";
+    flake-utils.url = "github:numtide/flake-utils";
+    zig.url = "github:mitchellh/zig-overlay";
+  };
 }
