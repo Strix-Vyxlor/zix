@@ -2,7 +2,7 @@
   description = "Base nix flake for dev enviroment, uzing zsh";
 
   outputs = inputs @ {self, ...}: let
-    zix-overlay = import ./overlay.nix inputs;
+    zix-overlay = import ./overlay.nix inputs.zig.packages;
     systems = builtins.attrNames inputs.zig.packages;
   in
     inputs.flake-utils.lib.eachSystem systems (system: let
@@ -21,7 +21,7 @@
       };
       devShells.default = pkgs.mkShell {
         packages = with pkgs; [
-          zigpkgs."0.15.1"
+          inputs.zig.packages.${system}."0.15.1"
           zls
         ];
       };

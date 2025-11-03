@@ -1,7 +1,6 @@
-{
+zig: {
   stdenvNoCC,
   fetchzip,
-  zigpkgs,
   callPackage,
   ...
 }:
@@ -12,13 +11,13 @@ stdenvNoCC.mkDerivation {
     url = "https://github.com/Strix-Vyxlor/zix/archive/refs/tags/0.4.0.tar.gz";
     hash = "sha256-FUhEZHyZJzaaDzc/uWl7c2aFrqirHAYlVCjH+J4G3Gk=";
   };
-  nativeBuildInputs = [zigpkgs."0.15.1"];
+  nativeBuildInputs = [zig];
   dontConfigure = true;
   dontInstall = true;
   doCheck = true;
   buildPhase = ''
     mkdir -p .cache
-    ln -s ${callPackage ./deps.nix {zig = zigpkgs."0.15.1";}} .cache/p
+    ln -s ${callPackage ./deps.nix {inherit zig;}} .cache/p
     zig build install --cache-dir $(pwd)/.zig-cache --global-cache-dir $(pwd)/.cache -Dcpu=baseline -Doptimize=ReleaseSafe --prefix $out
   '';
 }
