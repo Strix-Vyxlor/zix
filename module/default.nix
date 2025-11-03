@@ -1,4 +1,4 @@
-{
+zig: {
   pkgs,
   lib,
   config,
@@ -8,7 +8,7 @@
   cfg = config.programs.zix;
 in {
   imports = [
-    ./overlay.nix
+    (import ./overlay.nix zig)
   ];
 
   options.programs.zix = {

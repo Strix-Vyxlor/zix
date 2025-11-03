@@ -28,7 +28,7 @@
     })
     // {
       homeManagerModules = rec {
-        zix = ./module;
+        zix = import ./module inputs.zig.packages;
         default = zix;
       };
 
